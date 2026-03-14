@@ -685,6 +685,16 @@ Every new user must automatically receive **2 pre-filled demo boards** upon regi
 
 ---
 
+## CRITICAL: Test Database Safety
+
+**NEVER run tests (`npm test`, `npx playwright test`) against the development database.** The test suite truncates ALL tables (users, boards, cards, etc.) between test runs, which will permanently destroy all existing data. Before running any tests:
+
+1. Ensure `server/.env.test` exists with a **different** `DATABASE_URL` pointing to a dedicated test database.
+2. If `.env.test` does not exist or does not contain a separate `DATABASE_URL`, **do not run the tests** — warn the user and help them set up the test database first.
+3. Never assume the test database is configured. Always verify before running any test command.
+
+---
+
 ## Quality Bar
 
 This is a portfolio project, so prioritise:

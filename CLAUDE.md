@@ -25,6 +25,9 @@ See README.md for the full directory layout.
 - API responses: `{ data: ... }` for success, `{ error: "..." }` for errors
 - All protected routes require `Authorization: Bearer <token>` header
 
+## CRITICAL: Test database safety
+**NEVER run server or E2E tests against the development database.** The test suite truncates ALL tables (users, boards, cards, etc.) between runs, which will destroy all existing data. Before running any tests, ensure a separate test database is configured in `server/.env.test`. If `.env.test` does not exist or does not contain a different `DATABASE_URL`, **do not run the tests** — warn the user and help them set up the test database first.
+
 ## Environment setup
 - Copy `.env.example` to `server/.env` and fill in values
 - Requires PostgreSQL running locally (or via Docker: `docker run -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres`)
