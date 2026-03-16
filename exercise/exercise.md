@@ -98,3 +98,7 @@ Ask Claude:
 > - Apply appropriate light mode colors across all pages and components
 >
 > Take a screenshot when done and self-evaluate.
+
+## Exercise 8 — Commit and push
+
+Ask Claude to commit all your changes and push the branch to the remote repository.
