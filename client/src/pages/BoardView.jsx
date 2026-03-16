@@ -183,10 +183,10 @@ export default function BoardView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-void-950">
         <Header />
         <div className="flex items-center justify-center pt-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400" />
         </div>
       </div>
     );
@@ -194,26 +194,27 @@ export default function BoardView() {
 
   if (!board) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-void-950">
         <Header />
         <div className="flex items-center justify-center pt-32">
-          <p className="text-gray-500 text-lg">Board not found</p>
+          <p className="text-fg-muted text-lg font-display">Board not found</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: board.color || '#0079bf' }}
-    >
+    <div className="min-h-screen flex flex-col bg-void-950 noise-overlay">
       <Header />
 
       {/* Board header */}
-      <div className="pt-12">
+      <div className="pt-12 relative z-10">
         <div className="px-4 py-3 flex items-center gap-3">
-          <h1 className="text-lg font-bold text-white drop-shadow">{board.title}</h1>
+          <div
+            className="w-3 h-3 rounded-full shadow-neon-cyan"
+            style={{ backgroundColor: board.color || '#00e5ff' }}
+          />
+          <h1 className="font-display text-lg font-bold text-gradient drop-shadow">{board.title}</h1>
         </div>
       </div>
 
@@ -227,7 +228,7 @@ export default function BoardView() {
                 scrollContainerRef.current = el;
               }}
               {...provided.droppableProps}
-              className="flex-1 flex items-start gap-3 px-4 pb-4 overflow-x-auto overflow-y-hidden"
+              className="flex-1 flex items-start gap-3 px-4 pb-4 overflow-x-auto overflow-y-hidden relative z-10"
               style={{ minHeight: 'calc(100vh - 108px)' }}
             >
               {lists.map((list, index) => (
@@ -246,7 +247,7 @@ export default function BoardView() {
               {/* Add list */}
               <div className="flex-shrink-0 w-72">
                 {addingList ? (
-                  <div className="bg-gray-100 rounded-xl p-3 shadow-sm">
+                  <div className="bg-void-800 border border-edge rounded-xl p-3">
                     <input
                       ref={addListInputRef}
                       type="text"
@@ -260,12 +261,12 @@ export default function BoardView() {
                           setNewListTitle('');
                         }
                       }}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 mb-2"
+                      className="w-full bg-void-900 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 mb-2 transition-all placeholder:text-fg-faint"
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={handleAddList}
-                        className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 transition-colors"
+                        className="bg-gradient-to-r from-indigo-600 to-cyan-500 text-white px-4 py-1.5 rounded-lg text-sm font-display font-semibold hover:shadow-neon-cyan transition-all"
                       >
                         Add list
                       </button>
@@ -274,7 +275,7 @@ export default function BoardView() {
                           setAddingList(false);
                           setNewListTitle('');
                         }}
-                        className="text-gray-500 hover:text-gray-700 p-1.5"
+                        className="text-fg-muted hover:text-fg-soft p-1.5 transition-colors"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -290,7 +291,7 @@ export default function BoardView() {
                 ) : (
                   <button
                     onClick={() => setAddingList(true)}
-                    className="w-full bg-white/25 hover:bg-white/40 text-white rounded-xl px-4 py-3 text-sm font-medium text-left transition-colors flex items-center gap-1"
+                    className="w-full bg-tint hover:bg-void-600 border border-dashed border-edge-strong hover:border-indigo-500/30 text-fg-dim hover:text-cyan-400 rounded-xl px-4 py-3 text-sm font-display font-medium text-left transition-all flex items-center gap-1"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path

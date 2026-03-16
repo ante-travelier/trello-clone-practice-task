@@ -34,7 +34,10 @@ export default function BoardsPage() {
     if (!newTitle.trim()) return;
     try {
       const board = await boardsApi.createBoard({ title: newTitle.trim(), color: newColor });
-      setBoards((prev) => [...prev, board]);
+      setBoards((prev) => [
+        ...prev,
+        { ...board, stats: { totalLists: 0, totalCards: 0, pastDue: 0, dueSoon: 0 } },
+      ]);
       setNewTitle('');
       setNewColor(PRESET_COLORS[0]);
       setShowForm(false);
@@ -57,30 +60,55 @@ export default function BoardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-void-950 noise-overlay">
       <Header />
-      <main className="pt-12">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Your Boards</h1>
+      <main className="pt-12 relative z-10">
+        <div className="max-w-5xl mx-auto px-4 py-8 glow-bg">
+          <h1 className="font-display text-2xl font-bold text-gradient tracking-wide mb-6 relative z-10">
+            YOUR BOARDS
+          </h1>
 
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-400" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {boards.map((board) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 relative z-10">
+              {boards.map((board, i) => (
                 <div
                   key={board.id}
                   onClick={() => navigate(`/boards/${board.id}`)}
-                  className="relative group rounded-lg h-28 p-4 cursor-pointer shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-0.5"
-                  style={{ backgroundColor: board.color || '#0079bf' }}
+                  className="relative group rounded-xl h-36 p-4 cursor-pointer border border-edge hover:shadow-neon-hover transition-all transform hover:-translate-y-1 flex flex-col justify-between animate-fade-up"
+                  style={{
+                    backgroundColor: board.color || '#0079bf',
+                    animationDelay: `${i * 60}ms`,
+                  }}
                 >
-                  <h3 className="text-white font-bold text-base truncate pr-6">{board.title}</h3>
+                  <h3 className="font-display text-white font-bold text-base truncate pr-6 drop-shadow">
+                    {board.title}
+                  </h3>
+
+                  {board.stats && (
+                    <div className="flex items-center gap-2 flex-wrap text-white/70 text-xs">
+                      <span>{board.stats.totalLists} lists</span>
+                      <span className="text-white/30">|</span>
+                      <span>{board.stats.totalCards} cards</span>
+                      {board.stats.pastDue > 0 && (
+                        <span className="bg-red-500/30 text-red-300 border border-red-500/40 px-1.5 py-0.5 rounded">
+                          {board.stats.pastDue} overdue
+                        </span>
+                      )}
+                      {board.stats.dueSoon > 0 && (
+                        <span className="bg-yellow-500/30 text-yellow-300 border border-yellow-500/40 px-1.5 py-0.5 rounded">
+                          {board.stats.dueSoon} due soon
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <button
                     onClick={(e) => handleDeleteBoard(e, board.id, board.title)}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/20 hover:bg-black/40 text-white rounded p-1.5 transition-all"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/30 hover:bg-black/50 text-white rounded-lg p-1.5 transition-all"
                     title="Delete board"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +125,7 @@ export default function BoardsPage() {
 
               {/* Create new board */}
               {showForm ? (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <div className="bg-void-800 border border-edge-strong rounded-xl p-4 animate-fade-up">
                   <form onSubmit={handleCreateBoard}>
                     <input
                       type="text"
@@ -105,7 +133,7 @@ export default function BoardsPage() {
                       value={newTitle}
                       onChange={(e) => setNewTitle(e.target.value)}
                       autoFocus
-                      className="w-full border border-gray-300 rounded px-3 py-2 text-sm mb-3 outline-none focus:border-blue-400"
+                      className="w-full bg-void-900 border border-edge-strong rounded-lg px-3 py-2 text-sm text-fg mb-3 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all placeholder:text-fg-faint"
                     />
 
                     <div className="flex gap-2 mb-3">
@@ -114,9 +142,9 @@ export default function BoardsPage() {
                           key={color}
                           type="button"
                           onClick={() => setNewColor(color)}
-                          className={`w-8 h-8 rounded transition-transform ${
+                          className={`w-8 h-8 rounded-lg transition-all ${
                             newColor === color
-                              ? 'ring-2 ring-offset-2 ring-gray-600 scale-110'
+                              ? 'ring-2 ring-offset-2 ring-offset-void-800 ring-cyan-400 scale-110'
                               : 'hover:scale-105'
                           }`}
                           style={{ backgroundColor: color }}
@@ -127,7 +155,7 @@ export default function BoardsPage() {
                     <div className="flex gap-2">
                       <button
                         type="submit"
-                        className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 transition-colors"
+                        className="bg-gradient-to-r from-indigo-600 to-cyan-500 text-white px-4 py-1.5 rounded-lg text-sm font-display font-semibold tracking-wide hover:shadow-neon-cyan transition-all"
                       >
                         Create
                       </button>
@@ -137,7 +165,7 @@ export default function BoardsPage() {
                           setShowForm(false);
                           setNewTitle('');
                         }}
-                        className="text-gray-500 hover:text-gray-700 px-2 text-sm"
+                        className="text-fg-muted hover:text-fg-soft px-2 text-sm transition-colors"
                       >
                         Cancel
                       </button>
@@ -147,9 +175,9 @@ export default function BoardsPage() {
               ) : (
                 <div
                   onClick={() => setShowForm(true)}
-                  className="bg-gray-200 hover:bg-gray-300 rounded-lg h-28 p-4 cursor-pointer transition-colors flex items-center justify-center"
+                  className="bg-void-700 hover:bg-void-600 border border-dashed border-edge-strong rounded-xl h-28 p-4 cursor-pointer transition-all flex items-center justify-center group"
                 >
-                  <span className="text-gray-600 font-medium text-sm flex items-center gap-1">
+                  <span className="text-fg-muted group-hover:text-cyan-400 font-medium text-sm flex items-center gap-1 transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"

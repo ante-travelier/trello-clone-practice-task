@@ -13,6 +13,7 @@ model User {
   password  String
   name      String
   boards    Board[]
+  comments  Comment[]
   createdAt DateTime @default(now())
 }
 
@@ -46,6 +47,7 @@ model Card {
   listId      String
   labels      Label[]
   checklists  Checklist[]
+  comments    Comment[]
   createdAt   DateTime    @default(now())
 }
 
@@ -71,4 +73,14 @@ model ChecklistItem {
   checked     Boolean   @default(false)
   checklist   Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
   checklistId String
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
 }

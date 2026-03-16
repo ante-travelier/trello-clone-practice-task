@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trello Clone — App Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface-2: #1a1a26;
+      --border: #2a2a3a;
+      --text: #e4e4ef;
+      --text-muted: #8888a0;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.15);
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+      --purple: #a855f7;
+      --orange: #f97316;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+      background: rgba(10, 10, 15, .82);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .logo {
+      font-weight: 800; font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    nav .links { display: flex; gap: 1.75rem; }
+    nav .links a {
+      color: var(--text-muted); text-decoration: none; font-size: .875rem; font-weight: 500;
+      transition: color .2s;
+    }
+    nav .links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 10rem 2rem 6rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,.12), transparent),
+        radial-gradient(ellipse 40% 40% at 80% 20%, rgba(6,182,212,.08), transparent);
+      pointer-events: none;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800;
+      letter-spacing: -.03em; line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 540px; margin: 0 auto; }
+
+    .tab-bar {
+      display: flex; justify-content: center; gap: .5rem;
+      margin-top: 3rem;
+    }
+    .tab-bar button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: .6rem 1.4rem;
+      border-radius: 999px;
+      font-family: inherit; font-size: .875rem; font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab-bar button:hover { border-color: var(--accent); color: var(--text); }
+    .tab-bar button.active {
+      background: var(--accent); border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      display: none;
+      max-width: 1080px; margin: 0 auto;
+      padding: 2rem 2rem 6rem;
+      animation: fadeUp .4s ease;
+    }
+    .section.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-size: 1.75rem; font-weight: 700; margin-bottom: .5rem;
+    }
+    .section-sub {
+      color: var(--text-muted); margin-bottom: 2.5rem; font-size: 1rem;
+    }
+
+    /* ── CARDS GRID ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 1rem;
+    }
+    .card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: .4rem; }
+    .card p  { color: var(--text-muted); font-size: .875rem; line-height: 1.55; }
+
+    /* ── ARCHITECTURE ── */
+    .arch-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+    }
+    .arch-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+    }
+    .arch-row:last-child { margin-bottom: 0; }
+    .arch-box {
+      padding: .7rem 1.3rem;
+      border-radius: 10px;
+      font-size: .85rem; font-weight: 600;
+      text-align: center;
+      min-width: 130px;
+    }
+    .arch-arrow {
+      color: var(--text-muted); font-size: 1.3rem;
+    }
+    .arch-label {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--text-muted); margin-bottom: .5rem; text-align: center;
+    }
+
+    .tech-stack {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .tech-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: .85rem;
+    }
+    .tech-item .dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .tech-item strong { font-size: .875rem; }
+    .tech-item span { color: var(--text-muted); font-size: .8rem; margin-left: auto; }
+
+    /* ── TESTS ── */
+    .test-layer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .test-layer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .test-layer-header h3 { font-size: 1.05rem; font-weight: 600; }
+    .badge {
+      font-size: .75rem; font-weight: 700;
+      padding: .25rem .65rem;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .test-files { display: flex; flex-direction: column; gap: .6rem; }
+    .test-file {
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .test-file-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem; font-weight: 500;
+    }
+    .test-file-desc {
+      color: var(--text-muted); font-size: .8rem;
+    }
+    .test-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem; font-weight: 600; white-space: nowrap;
+    }
+
+    .total-bar {
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      border-radius: 14px;
+      padding: 1.5rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 1.25rem;
+    }
+    .total-bar span { font-weight: 700; font-size: 1.1rem; }
+    .total-bar .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem; font-weight: 800;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 2rem;
+      color: var(--text-muted); font-size: .8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .hero { padding: 8rem 1rem 4rem; }
+      .section { padding: 1.5rem 1rem 4rem; }
+      .grid { grid-template-columns: 1fr; }
+      .tech-stack { grid-template-columns: 1fr; }
+      .test-file { flex-direction: column; align-items: flex-start; gap: .3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Trello Clone</div>
+  <div class="links">
+    <a href="#" onclick="switchTab('product')">Product</a>
+    <a href="#" onclick="switchTab('architecture')">Architecture</a>
+    <a href="#" onclick="switchTab('tests')">Tests</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <h1>Full-Stack <span>Trello Clone</span></h1>
+  <p>A portfolio-grade project management app built with React, Node.js, and PostgreSQL — complete with auth, drag-and-drop, and a comprehensive test suite.</p>
+  <div class="tab-bar">
+    <button class="active" onclick="switchTab('product')">Product</button>
+    <button onclick="switchTab('architecture')">Architecture &amp; Tech</button>
+    <button onclick="switchTab('tests')">Tests</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PRODUCT                                    -->
+<!-- ══════════════════════════════════════════ -->
+<section id="product" class="section active">
+  <h2 class="section-title">Features</h2>
+  <p class="section-sub">Everything you need to manage work visually — boards, lists, cards, and more.</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon" style="background:rgba(99,102,241,.15); color:var(--accent);">&#128274;</div>
+      <h3>Authentication</h3>
+      <p>Register, login, and auto-refresh sessions. Access tokens live in memory, refresh tokens in httpOnly cookies — secure by default.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(6,182,212,.15); color:var(--cyan);">&#128203;</div>
+      <h3>Boards</h3>
+      <p>Create, rename, recolor, and delete boards. Each board is a Kanban workspace with its own lists and cards. Six preset board colors.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(34,197,94,.15); color:var(--green);">&#9776;</div>
+      <h3>Lists &amp; Cards</h3>
+      <p>Add lists to boards, add cards to lists. Rename, reorder, move between lists, or delete — with full cascading cleanup.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(168,85,247,.15); color:var(--purple);">&#127912;</div>
+      <h3>Drag &amp; Drop</h3>
+      <p>Reorder lists horizontally and cards vertically (or across lists) with smooth drag-and-drop. Optimistic UI with server rollback.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(249,115,22,.15); color:var(--orange);">&#127991;</div>
+      <h3>Labels</h3>
+      <p>Color-code cards with labels (green, yellow, orange, red, purple, blue). Labels display on both the card tile and the detail modal.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(234,179,8,.15); color:var(--yellow);">&#9745;</div>
+      <h3>Checklists</h3>
+      <p>Create checklists on any card, add items, and toggle completion. A progress bar shows percentage complete at a glance.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(239,68,68,.15); color:var(--red);">&#128197;</div>
+      <h3>Due Dates</h3>
+      <p>Set due dates on cards. Color-coded badges: red for overdue, yellow for today, gray for future — visible on the board and in the modal.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon" style="background:rgba(99,102,241,.15); color:var(--accent);">&#128640;</div>
+      <h3>Demo Data</h3>
+      <p>New users get two fully seeded boards with realistic cards, labels, and checklists — ready to explore out of the box.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- ARCHITECTURE                               -->
+<!-- ══════════════════════════════════════════ -->
+<section id="architecture" class="section">
+  <h2 class="section-title">Architecture &amp; Tech</h2>
+  <p class="section-sub">A clean, layered monorepo with clear separation between frontend, API, and database.</p>
+
+  <!-- Diagram -->
+  <div class="arch-diagram">
+    <div class="arch-label">Client</div>
+    <div class="arch-row">
+      <div class="arch-box" style="background:rgba(6,182,212,.15); color:var(--cyan); border:1px solid rgba(6,182,212,.3);">React 18 + Vite</div>
+      <div class="arch-box" style="background:rgba(168,85,247,.15); color:var(--purple); border:1px solid rgba(168,85,247,.3);">Tailwind CSS</div>
+      <div class="arch-box" style="background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3);">@hello-pangea/dnd</div>
+    </div>
+
+    <div class="arch-row"><span class="arch-arrow">&#8595; Axios (REST) &#8595;</span></div>
+
+    <div class="arch-label">Server</div>
+    <div class="arch-row">
+      <div class="arch-box" style="background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3);">Node.js + Express</div>
+      <div class="arch-box" style="background:rgba(234,179,8,.15); color:var(--yellow); border:1px solid rgba(234,179,8,.3);">JWT Auth</div>
+      <div class="arch-box" style="background:rgba(249,115,22,.15); color:var(--orange); border:1px solid rgba(249,115,22,.3);">Zod Validation</div>
+    </div>
+
+    <div class="arch-row"><span class="arch-arrow">&#8595; Prisma ORM &#8595;</span></div>
+
+    <div class="arch-label">Database</div>
+    <div class="arch-row">
+      <div class="arch-box" style="background:rgba(99,102,241,.15); color:var(--accent); border:1px solid rgba(99,102,241,.3);">PostgreSQL</div>
+    </div>
+  </div>
+
+  <!-- Data model -->
+  <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:1rem;">Data Model (7 tables)</h3>
+  <div class="arch-diagram" style="font-family:'JetBrains Mono',monospace; font-size:.82rem; line-height:1.8; color:var(--text-muted);">
+    <span style="color:var(--accent)">User</span><br>
+    &nbsp;&nbsp;&#9492;&#9472; <span style="color:var(--cyan)">Board</span> <span style="font-size:.7rem">(title, color, ownerId)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472; <span style="color:var(--green)">List</span> <span style="font-size:.7rem">(title, position:Float)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472; <span style="color:var(--yellow)">Card</span> <span style="font-size:.7rem">(title, description, position:Float, dueDate)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472; <span style="color:var(--orange)">Label</span> <span style="font-size:.7rem">(text, color)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472; <span style="color:var(--purple)">Checklist</span> <span style="font-size:.7rem">(title)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472; <span style="color:var(--red)">ChecklistItem</span> <span style="font-size:.7rem">(text, checked)</span>
+  </div>
+
+  <!-- Tech stack list -->
+  <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:.25rem;">Tech Stack</h3>
+  <div class="tech-stack">
+    <div class="tech-item"><div class="dot" style="background:var(--cyan)"></div><strong>React 18</strong><span>UI</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--yellow)"></div><strong>Vite 5</strong><span>Build</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--purple)"></div><strong>Tailwind CSS 3</strong><span>Styling</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--green)"></div><strong>Express 4</strong><span>API</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--accent)"></div><strong>Prisma</strong><span>ORM</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--accent)"></div><strong>PostgreSQL</strong><span>Database</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--orange)"></div><strong>JWT + bcrypt</strong><span>Auth</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--red)"></div><strong>Zod</strong><span>Validation</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--green)"></div><strong>@hello-pangea/dnd</strong><span>Drag &amp; Drop</span></div>
+    <div class="tech-item"><div class="dot" style="background:var(--cyan)"></div><strong>Axios</strong><span>HTTP Client</span></div>
+  </div>
+
+  <!-- Key decisions -->
+  <h3 style="font-size:1.1rem; font-weight:600; margin: 2rem 0 1rem;">Key Design Decisions</h3>
+  <div class="grid">
+    <div class="card">
+      <h3>Token Strategy</h3>
+      <p>Access tokens (15 min) stored in React state — never touches localStorage. Refresh tokens (7 days) in httpOnly cookies, immune to XSS.</p>
+    </div>
+    <div class="card">
+      <h3>Float Positions</h3>
+      <p>Lists and cards use float-based positions so reordering only updates one row instead of re-indexing the entire list.</p>
+    </div>
+    <div class="card">
+      <h3>Optimistic Updates</h3>
+      <p>Drag-and-drop applies changes instantly in the UI and rolls back on server error — keeping the experience snappy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TESTS                                      -->
+<!-- ══════════════════════════════════════════ -->
+<section id="tests" class="section">
+  <h2 class="section-title">Test Suite</h2>
+  <p class="section-sub">Three layers of testing — unit, component, and end-to-end — across 14 test files.</p>
+
+  <!-- Server -->
+  <div class="test-layer">
+    <div class="test-layer-header">
+      <h3>Server Tests — Jest</h3>
+      <span class="badge" style="background:rgba(34,197,94,.15); color:var(--green);">63 tests</span>
+    </div>
+    <div class="test-files">
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">auth.test.js</div>
+          <div class="test-file-desc">Registration, login, token refresh, logout</div>
+        </div>
+        <div class="test-count">10</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">boards.test.js</div>
+          <div class="test-file-desc">Board CRUD, authorization, cascading deletes</div>
+        </div>
+        <div class="test-count">12</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">lists.test.js</div>
+          <div class="test-file-desc">List creation, reordering, renaming, deletion</div>
+        </div>
+        <div class="test-count">9</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">cards.test.js</div>
+          <div class="test-file-desc">Card CRUD, labels, checklists, position management</div>
+        </div>
+        <div class="test-count">25</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">middleware.test.js</div>
+          <div class="test-file-desc">Auth middleware: missing/malformed/expired tokens</div>
+        </div>
+        <div class="test-count">7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client -->
+  <div class="test-layer">
+    <div class="test-layer-header">
+      <h3>Client Tests — Vitest + React Testing Library</h3>
+      <span class="badge" style="background:rgba(6,182,212,.15); color:var(--cyan);">50 tests</span>
+    </div>
+    <div class="test-files">
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">AuthContext.test.jsx</div>
+          <div class="test-file-desc">Auth flow, token refresh on mount, error handling</div>
+        </div>
+        <div class="test-count">8</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">BoardView.test.jsx</div>
+          <div class="test-file-desc">Board rendering, list/card creation, background colors</div>
+        </div>
+        <div class="test-count">10</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">CardModal.test.jsx</div>
+          <div class="test-file-desc">Card details, labels, checklists, inline editing</div>
+        </div>
+        <div class="test-count">15</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">BoardCard.test.jsx</div>
+          <div class="test-file-desc">Board tiles, delete confirmation, create button</div>
+        </div>
+        <div class="test-count">9</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">DueDateBadge.test.jsx</div>
+          <div class="test-file-desc">Color-coded badges: overdue, today, future</div>
+        </div>
+        <div class="test-count">8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- E2E -->
+  <div class="test-layer">
+    <div class="test-layer-header">
+      <h3>E2E Tests — Playwright</h3>
+      <span class="badge" style="background:rgba(168,85,247,.15); color:var(--purple);">23 tests</span>
+    </div>
+    <div class="test-files">
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">auth.spec.ts</div>
+          <div class="test-file-desc">Registration, login, logout, redirect flows</div>
+        </div>
+        <div class="test-count">4</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">boards.spec.ts</div>
+          <div class="test-file-desc">Create, list, delete boards from dashboard</div>
+        </div>
+        <div class="test-count">4</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">lists-cards.spec.ts</div>
+          <div class="test-file-desc">List/card operations, cascading deletes</div>
+        </div>
+        <div class="test-count">5</div>
+      </div>
+      <div class="test-file">
+        <div>
+          <div class="test-file-name">card-detail.spec.ts</div>
+          <div class="test-file-desc">Card modal, labels, checklists, due dates</div>
+        </div>
+        <div class="test-count">10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="total-bar">
+    <span>Total Test Cases</span>
+    <span class="num">136</span>
+  </div>
+</section>
+
+<footer>
+  Built as a portfolio project &middot; React + Express + PostgreSQL
+</footer>
+
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+
+    const labels = { product: 'Product', architecture: 'Architecture & Tech', tests: 'Tests' };
+    document.querySelectorAll('.tab-bar button').forEach(b => {
+      if (b.textContent === labels[tab]) b.classList.add('active');
+    });
+  }
+</script>
+
+</body>
+</html>

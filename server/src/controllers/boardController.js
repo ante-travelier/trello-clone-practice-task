@@ -13,12 +13,47 @@ const updateBoardSchema = z.object({
 
 export async function getBoards(req, res, next) {
   try {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const in5Days = new Date(startOfToday);
+    in5Days.setDate(in5Days.getDate() + 5);
+
     const boards = await prisma.board.findMany({
       where: { ownerId: req.userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        lists: {
+          select: {
+            id: true,
+            cards: {
+              select: { dueDate: true },
+            },
+          },
+        },
+      },
     });
 
-    res.json({ data: boards });
+    const data = boards.map((board) => {
+      const allCards = board.lists.flatMap((list) => list.cards);
+
+      const stats = {
+        totalLists: board.lists.length,
+        totalCards: allCards.length,
+        pastDue: allCards.filter(
+          (c) => c.dueDate && new Date(c.dueDate) < startOfToday
+        ).length,
+        dueSoon: allCards.filter((c) => {
+          if (!c.dueDate) return false;
+          const d = new Date(c.dueDate);
+          return d >= startOfToday && d <= in5Days;
+        }).length,
+      };
+
+      const { lists, ...boardData } = board;
+      return { ...boardData, stats };
+    });
+
+    res.json({ data });
   } catch (error) {
     next(error);
   }
