@@ -12,11 +12,11 @@ export default function DueDateBadge({ date }) {
   let className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ';
 
   if (diffDays < 0) {
-    className += 'bg-red-500 text-white';
+    className += 'bg-red-500/20 text-red-400 border border-red-500/30';
   } else if (diffDays === 0) {
-    className += 'bg-yellow-400 text-gray-900';
+    className += 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
   } else {
-    className += 'bg-gray-200 text-gray-700';
+    className += 'bg-gray-700/50 text-gray-400 border border-gray-600/30';
   }
 
   const formatted = dueDate.toLocaleDateString('en-US', {

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trello Clone — App Overview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-card: #111827;
+      --bg-card-hover: #1a2236;
+      --border: #1e293b;
+      --accent: #6366f1;
+      --accent2: #06b6d4;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --gradient: linear-gradient(135deg, #6366f1, #06b6d4);
+      --glow: 0 0 30px rgba(99, 102, 241, 0.15);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* Background glow effects */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Tab navigation */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      position: relative;
+      bottom: -1px;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent2);
+    }
+
+    .tab-icon { margin-right: 0.5rem; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.25s;
+      box-shadow: var(--glow);
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card p, .card li {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card li {
+      padding: 0.3rem 0;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .card li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+      font-weight: bold;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-indigo { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+    .badge-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    .badge-green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .badge-yellow { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .badge-orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--text-muted);
+    }
+
+    .arch-diagram .hl { color: #818cf8; }
+    .arch-diagram .hl2 { color: #22d3ee; }
+    .arch-diagram .hl3 { color: #4ade80; }
+
+    /* DB Schema table */
+    .schema-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+
+    .schema-table th {
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--accent2);
+      text-align: left;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .schema-table td {
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+      color: var(--text-muted);
+    }
+
+    .schema-table tr:hover td { background: rgba(99, 102, 241, 0.03); }
+    .schema-table code {
+      background: rgba(99, 102, 241, 0.1);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: #c084fc;
+    }
+
+    /* Test coverage bars */
+    .test-section { margin-bottom: 1.5rem; }
+
+    .test-layer {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .test-layer-label {
+      min-width: 120px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .test-bar-bg {
+      flex: 1;
+      height: 10px;
+      background: rgba(30, 41, 59, 0.8);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .test-bar {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.8s ease;
+    }
+
+    .test-count {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      min-width: 70px;
+    }
+
+    /* Section headers */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin-left: 0.5rem;
+    }
+
+    .subsection { margin-bottom: 2rem; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Trello Clone — App Overview</h1>
+  <p>Full-stack Kanban board application with real-time drag-and-drop, JWT auth, and comprehensive test coverage</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('product')">
+      <span class="tab-icon">&#9733;</span>Product
+    </button>
+    <button class="tab" onclick="showTab('architecture')">
+      <span class="tab-icon">&#9881;</span>Architecture & Tech
+    </button>
+    <button class="tab" onclick="showTab('tests')">
+      <span class="tab-icon">&#10003;</span>Tests
+    </button>
+  </div>
+
+  <!-- PRODUCT TAB -->
+  <div id="product" class="tab-content active">
+    <h2 class="section-title">Features</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>&#128203; Boards</h3>
+        <ul>
+          <li>Create, rename, and delete boards</li>
+          <li>Preset color themes for board backgrounds</li>
+          <li>Dashboard view showing all user boards</li>
+          <li>Board ownership — only the creator can modify</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#128196; Lists</h3>
+        <ul>
+          <li>Add unlimited lists to any board</li>
+          <li>Rename and delete lists</li>
+          <li>Drag-and-drop reordering between positions</li>
+          <li>Float-based positioning (no full re-indexing)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#127183; Cards</h3>
+        <ul>
+          <li>Create cards within lists with title and description</li>
+          <li>Drag cards between lists or reorder within a list</li>
+          <li>Detailed card modal with all metadata</li>
+          <li>Optimistic UI updates with rollback on failure</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#127991; Labels</h3>
+        <ul>
+          <li>Color-coded labels for card categorization</li>
+          <li>Custom label text per card</li>
+          <li>Visual label chips on card tiles</li>
+          <li>Add/remove labels from card modal</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#9745; Checklists</h3>
+        <ul>
+          <li>Multiple checklists per card</li>
+          <li>Add, toggle, and remove checklist items</li>
+          <li>Progress tracking per checklist</li>
+          <li>Nested: Card → Checklist → Items</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#128197; Due Dates</h3>
+        <ul>
+          <li>Set optional due dates on cards</li>
+          <li>Color-coded badge: green (ok), yellow (soon), red (overdue)</li>
+          <li>Relative time display ("2 hours ago")</li>
+          <li>DateTime picker in card modal</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#128274; Authentication</h3>
+        <ul>
+          <li>Register with name, email, and password</li>
+          <li>JWT access + refresh token flow</li>
+          <li>Access tokens in memory (XSS-safe)</li>
+          <li>Refresh tokens in httpOnly cookies</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>&#128256; Drag & Drop</h3>
+        <ul>
+          <li>Powered by @hello-pangea/dnd</li>
+          <li>Reorder lists horizontally</li>
+          <li>Move cards between lists</li>
+          <li>Optimistic updates with server sync</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE TAB -->
+  <div id="architecture" class="tab-content">
+
+    <h2 class="section-title">System Architecture</h2>
+    <div class="arch-diagram"><span class="hl">Browser (React SPA)</span>
+  │
+  │  HTTP / REST / JSON
+  │  Auth: Bearer JWT token
+  ▼
+<span class="hl2">Express API Server</span>  :4000
+  │
+  ├── <span class="hl3">/api/auth/*</span>      Register, Login, Refresh, Logout
+  ├── <span class="hl3">/api/boards/*</span>    CRUD + ownership guard
+  ├── <span class="hl3">/api/lists/*</span>     CRUD + position management
+  ├── <span class="hl3">/api/cards/*</span>     CRUD + details (labels, checklists)
+  │
+  │  Prisma ORM
+  ▼
+<span class="hl">PostgreSQL</span>  :5432
+  └── 7 tables: User, Board, List, Card, Label, Checklist, ChecklistItem</div>
+
+    <div class="subsection">
+      <h2 class="section-title">Tech Stack</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3><span class="badge badge-cyan">Frontend</span></h3>
+          <ul>
+            <li><strong>React 18</strong> — component-based UI</li>
+            <li><strong>Vite 5</strong> — fast dev server & bundler</li>
+            <li><strong>Tailwind CSS 3</strong> — utility-first styling</li>
+            <li><strong>React Router 6</strong> — client-side routing</li>
+            <li><strong>Axios</strong> — HTTP client with token interceptors</li>
+            <li><strong>@hello-pangea/dnd</strong> — drag-and-drop</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="badge badge-indigo">Backend</span></h3>
+          <ul>
+            <li><strong>Node.js + Express 4</strong> — REST API</li>
+            <li><strong>Prisma ORM</strong> — type-safe database access</li>
+            <li><strong>PostgreSQL</strong> — relational database</li>
+            <li><strong>bcryptjs</strong> — password hashing</li>
+            <li><strong>Zod</strong> — input validation schemas</li>
+            <li><strong>jsonwebtoken</strong> — JWT token signing</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="badge badge-green">Auth Flow</span></h3>
+          <ul>
+            <li>Access token stored in React state (not localStorage)</li>
+            <li>Refresh token in httpOnly cookie (XSS-proof)</li>
+            <li>Axios interceptor auto-refreshes expired tokens</li>
+            <li>Protected routes via JWT middleware</li>
+            <li>Passwords hashed with bcrypt (salt rounds: 10)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h2 class="section-title">Database Schema</h2>
+      <table class="schema-table">
+        <thead>
+          <tr><th>Model</th><th>Key Fields</th><th>Relations</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>User</code></td>
+            <td>id, email, password, name, createdAt</td>
+            <td>Has many <code>Board</code></td>
+          </tr>
+          <tr>
+            <td><code>Board</code></td>
+            <td>id, title, color, createdAt</td>
+            <td>Belongs to <code>User</code>, has many <code>List</code></td>
+          </tr>
+          <tr>
+            <td><code>List</code></td>
+            <td>id, title, position (Float), createdAt</td>
+            <td>Belongs to <code>Board</code>, has many <code>Card</code></td>
+          </tr>
+          <tr>
+            <td><code>Card</code></td>
+            <td>id, title, description?, position (Float), dueDate?</td>
+            <td>Belongs to <code>List</code>, has many <code>Label</code>, <code>Checklist</code></td>
+          </tr>
+          <tr>
+            <td><code>Label</code></td>
+            <td>id, text, color</td>
+            <td>Belongs to <code>Card</code></td>
+          </tr>
+          <tr>
+            <td><code>Checklist</code></td>
+            <td>id, title</td>
+            <td>Belongs to <code>Card</code>, has many <code>ChecklistItem</code></td>
+          </tr>
+          <tr>
+            <td><code>ChecklistItem</code></td>
+            <td>id, text, checked (Boolean)</td>
+            <td>Belongs to <code>Checklist</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+        All relations use cascading deletes for referential integrity.
+      </p>
+    </div>
+  </div>
+
+  <!-- TESTS TAB -->
+  <div id="tests" class="tab-content">
+
+    <h2 class="section-title">Test Coverage Overview</h2>
+
+    <div class="test-section">
+      <div class="test-layer">
+        <span class="test-layer-label"><span class="badge badge-indigo">Server</span></span>
+        <div class="test-bar-bg"><div class="test-bar" style="width: 100%; background: var(--gradient);"></div></div>
+        <span class="test-count">5 test files</span>
+      </div>
+      <div class="test-layer">
+        <span class="test-layer-label"><span class="badge badge-cyan">Client</span></span>
+        <div class="test-bar-bg"><div class="test-bar" style="width: 85%; background: linear-gradient(135deg, #06b6d4, #22d3ee);"></div></div>
+        <span class="test-count">5 test files</span>
+      </div>
+      <div class="test-layer">
+        <span class="test-layer-label"><span class="badge badge-green">E2E</span></span>
+        <div class="test-bar-bg"><div class="test-bar" style="width: 70%; background: linear-gradient(135deg, #22c55e, #4ade80);"></div></div>
+        <span class="test-count">4 spec files</span>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3><span class="badge badge-indigo">Server</span> Jest + Supertest</h3>
+        <p style="margin-bottom: 0.5rem;">Integration tests hitting real API endpoints with test database</p>
+        <ul>
+          <li><code>auth.test.js</code> — registration, login, token refresh, validation</li>
+          <li><code>middleware.test.js</code> — JWT verification, expired/invalid tokens</li>
+          <li><code>boards.test.js</code> — CRUD operations, ownership checks</li>
+          <li><code>lists.test.js</code> — creation, float positioning, cascading delete</li>
+          <li><code>cards.test.js</code> — CRUD, due dates, labels, checklists</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="badge badge-cyan">Client</span> Vitest + Testing Library</h3>
+        <p style="margin-bottom: 0.5rem;">Component and unit tests with mocked API calls</p>
+        <ul>
+          <li><code>AuthContext.test.jsx</code> — auth state management, token refresh</li>
+          <li><code>BoardCard.test.jsx</code> — board listing, delete confirmation</li>
+          <li><code>BoardView.test.jsx</code> — drag-and-drop, list/card operations</li>
+          <li><code>CardModal.test.jsx</code> — card details, labels, checklists, due dates</li>
+          <li><code>DueDateBadge.test.jsx</code> — color coding, relative time display</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3><span class="badge badge-green">E2E</span> Playwright</h3>
+        <p style="margin-bottom: 0.5rem;">Full browser-based end-to-end user flows</p>
+        <ul>
+          <li><code>auth.spec.ts</code> — register, login, duplicate email handling</li>
+          <li><code>boards.spec.ts</code> — create board, delete board, board listing</li>
+          <li><code>lists-cards.spec.ts</code> — add lists/cards, drag-and-drop, delete</li>
+          <li><code>card-detail.spec.ts</code> — card modal, labels, checklists, due dates</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <h2 class="section-title">Testing Strategy</h2>
+      <div class="card">
+        <h3>&#127919; Three-Layer Approach</h3>
+        <ul>
+          <li><strong>Unit/Component (Client)</strong> — isolated React components with mocked APIs, verifying UI rendering and user interactions</li>
+          <li><strong>Integration (Server)</strong> — real HTTP requests via Supertest against Express app with test database, verifying business logic and data persistence</li>
+          <li><strong>End-to-End (Playwright)</strong> — full browser automation testing complete user journeys across frontend and backend</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Trello Clone App Overview &mdash; Generated for portfolio review
+</footer>
+
+<script>
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
