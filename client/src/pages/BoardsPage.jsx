@@ -34,7 +34,7 @@ export default function BoardsPage() {
     if (!newTitle.trim()) return;
     try {
       const board = await boardsApi.createBoard({ title: newTitle.trim(), color: newColor });
-      setBoards((prev) => [...prev, board]);
+      setBoards((prev) => [...prev, { ...board, stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } }]);
       setNewTitle('');
       setNewColor(PRESET_COLORS[0]);
       setShowForm(false);
@@ -57,15 +57,15 @@ export default function BoardsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-dark-base bg-radial-glow-cyan">
       <Header />
       <main className="pt-12">
         <div className="max-w-5xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Your Boards</h1>
+          <h1 className="text-2xl font-bold text-gradient-heading mb-6">Your Boards</h1>
 
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-neon-indigo" />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -73,31 +73,60 @@ export default function BoardsPage() {
                 <div
                   key={board.id}
                   onClick={() => navigate(`/boards/${board.id}`)}
-                  className="relative group rounded-lg h-28 p-4 cursor-pointer shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                  className="relative group rounded-lg h-36 p-4 cursor-pointer border border-white/10 hover-neon-glow transition-all transform hover:-translate-y-0.5 flex flex-col justify-between overflow-hidden"
                   style={{ backgroundColor: board.color || '#0079bf' }}
                 >
-                  <h3 className="text-white font-bold text-base truncate pr-6">{board.title}</h3>
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+
+                  <h3 className="text-white font-bold text-base truncate pr-6 relative z-10">{board.title}</h3>
+
+                  {board.stats && (
+                    <div className="flex items-center gap-3 text-xs text-white/80 relative z-10">
+                      <span className="flex items-center gap-1" title="Lists">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                        </svg>
+                        {board.stats.totalLists}
+                      </span>
+                      <span className="flex items-center gap-1" title="Cards">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        {board.stats.totalCards}
+                      </span>
+                      {board.stats.overdue > 0 && (
+                        <span className="flex items-center gap-1 text-red-300" title="Overdue">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {board.stats.overdue}
+                        </span>
+                      )}
+                      {board.stats.dueSoon > 0 && (
+                        <span className="flex items-center gap-1 text-yellow-300" title="Due soon">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {board.stats.dueSoon}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <button
                     onClick={(e) => handleDeleteBoard(e, board.id, board.title)}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/20 hover:bg-black/40 text-white rounded p-1.5 transition-all"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-black/30 hover:bg-neon-red/30 text-white rounded p-1.5 transition-all z-10"
                     title="Delete board"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
                 </div>
               ))}
 
-              {/* Create new board */}
               {showForm ? (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <div className="bg-dark-card border border-dark-border rounded-lg p-4">
                   <form onSubmit={handleCreateBoard}>
                     <input
                       type="text"
@@ -105,7 +134,7 @@ export default function BoardsPage() {
                       value={newTitle}
                       onChange={(e) => setNewTitle(e.target.value)}
                       autoFocus
-                      className="w-full border border-gray-300 rounded px-3 py-2 text-sm mb-3 outline-none focus:border-blue-400"
+                      className="w-full bg-dark-surface border border-dark-border rounded px-3 py-2 text-sm text-theme-primary placeholder-theme-muted mb-3 outline-none focus:border-neon-indigo/50 focus:ring-1 focus:ring-neon-indigo/30 transition-all"
                     />
 
                     <div className="flex gap-2 mb-3">
@@ -116,7 +145,7 @@ export default function BoardsPage() {
                           onClick={() => setNewColor(color)}
                           className={`w-8 h-8 rounded transition-transform ${
                             newColor === color
-                              ? 'ring-2 ring-offset-2 ring-gray-600 scale-110'
+                              ? 'ring-2 ring-offset-2 ring-offset-dark-card ring-neon-cyan scale-110'
                               : 'hover:scale-105'
                           }`}
                           style={{ backgroundColor: color }}
@@ -127,17 +156,14 @@ export default function BoardsPage() {
                     <div className="flex gap-2">
                       <button
                         type="submit"
-                        className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 transition-colors"
+                        className="bg-gradient-accent text-white px-4 py-1.5 rounded text-sm font-medium hover:shadow-neon-indigo transition-all"
                       >
                         Create
                       </button>
                       <button
                         type="button"
-                        onClick={() => {
-                          setShowForm(false);
-                          setNewTitle('');
-                        }}
-                        className="text-gray-500 hover:text-gray-700 px-2 text-sm"
+                        onClick={() => { setShowForm(false); setNewTitle(''); }}
+                        className="text-theme-muted hover:text-theme-secondary px-2 text-sm transition-colors"
                       >
                         Cancel
                       </button>
@@ -147,16 +173,11 @@ export default function BoardsPage() {
               ) : (
                 <div
                   onClick={() => setShowForm(true)}
-                  className="bg-gray-200 hover:bg-gray-300 rounded-lg h-28 p-4 cursor-pointer transition-colors flex items-center justify-center"
+                  className="bg-dark-card hover:bg-dark-elevated border border-dark-border border-dashed rounded-lg h-36 p-4 cursor-pointer transition-all hover-neon-glow flex items-center justify-center"
                 >
-                  <span className="text-gray-600 font-medium text-sm flex items-center gap-1">
+                  <span className="text-theme-muted font-medium text-sm flex items-center gap-1">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4v16m8-8H4"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     Create new board
                   </span>

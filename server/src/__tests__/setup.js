@@ -82,6 +82,7 @@ export async function createTestCard(token, listId, title = 'Test Card') {
  * Truncate all tables in the correct order to respect foreign key constraints.
  */
 async function cleanDatabase() {
+  await prisma.comment.deleteMany();
   await prisma.checklistItem.deleteMany();
   await prisma.checklist.deleteMany();
   await prisma.label.deleteMany();

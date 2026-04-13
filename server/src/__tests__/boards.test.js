@@ -1,5 +1,6 @@
 import {
   request,
+  prisma,
   createTestUser,
   createTestBoard,
   createTestList,
@@ -22,6 +23,96 @@ describe('GET /api/boards', () => {
     expect(res.status).toBe(200);
     expect(res.body.data).toHaveLength(2);
     expect(res.body.data.every((b) => b.ownerId === userA.user.id)).toBe(true);
+  });
+
+  test('includes stats with list and card counts', async () => {
+    const { token } = await createTestUser();
+    const board = await createTestBoard(token);
+    const list1 = await createTestList(token, board.id, 'List 1');
+    const list2 = await createTestList(token, board.id, 'List 2');
+    await createTestCard(token, list1.id, 'Card 1');
+    await createTestCard(token, list1.id, 'Card 2');
+    await createTestCard(token, list2.id, 'Card 3');
+
+    const res = await request
+      .get('/api/boards')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    const b = res.body.data[0];
+    expect(b.stats).toBeDefined();
+    expect(b.stats.totalLists).toBe(2);
+    expect(b.stats.totalCards).toBe(3);
+    expect(b.stats.overdue).toBe(0);
+    expect(b.stats.dueSoon).toBe(0);
+  });
+
+  test('counts overdue cards correctly', async () => {
+    const { token } = await createTestUser();
+    const board = await createTestBoard(token);
+    const list = await createTestList(token, board.id);
+    const card = await createTestCard(token, list.id);
+
+    await prisma.card.update({
+      where: { id: card.id },
+      data: { dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) },
+    });
+
+    const res = await request
+      .get('/api/boards')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.body.data[0].stats.overdue).toBe(1);
+  });
+
+  test('counts due-soon cards correctly', async () => {
+    const { token } = await createTestUser();
+    const board = await createTestBoard(token);
+    const list = await createTestList(token, board.id);
+    const card = await createTestCard(token, list.id);
+
+    await prisma.card.update({
+      where: { id: card.id },
+      data: { dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) },
+    });
+
+    const res = await request
+      .get('/api/boards')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.body.data[0].stats.dueSoon).toBe(1);
+    expect(res.body.data[0].stats.overdue).toBe(0);
+  });
+
+  test('does not count far-future cards as due soon', async () => {
+    const { token } = await createTestUser();
+    const board = await createTestBoard(token);
+    const list = await createTestList(token, board.id);
+    const card = await createTestCard(token, list.id);
+
+    await prisma.card.update({
+      where: { id: card.id },
+      data: { dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) },
+    });
+
+    const res = await request
+      .get('/api/boards')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.body.data[0].stats.dueSoon).toBe(0);
+  });
+
+  test('does not include raw lists in response', async () => {
+    const { token } = await createTestUser();
+    const board = await createTestBoard(token);
+    await createTestList(token, board.id);
+
+    const res = await request
+      .get('/api/boards')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.body.data[0]).not.toHaveProperty('lists');
+    expect(res.body.data[0]).toHaveProperty('stats');
   });
 
   test('returns empty array when user has no boards', async () => {

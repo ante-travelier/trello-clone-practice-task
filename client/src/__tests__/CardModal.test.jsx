@@ -13,6 +13,8 @@ vi.mock('../api/cardDetails.js', () => ({
   addChecklistItem: vi.fn(),
   toggleChecklistItem: vi.fn(),
   deleteChecklistItem: vi.fn(),
+  addComment: vi.fn(),
+  getComments: vi.fn(),
 }));
 
 vi.mock('../api/cards.js', () => ({
@@ -26,6 +28,10 @@ vi.mock('react-hot-toast', () => ({
     error: vi.fn(),
     success: vi.fn(),
   },
+}));
+
+vi.mock('../hooks/useAuth.js', () => ({
+  useAuth: () => ({ user: { id: 'user1', name: 'Test User', email: 'test@test.com' } }),
 }));
 
 const baseCard = {
@@ -89,7 +95,7 @@ describe('CardModal', () => {
         ...baseCard,
         labels: [
           { id: 'lbl1', text: 'Urgent', color: '#eb5a46' },
-          { id: 'lbl2', text: 'Feature', color: '#61bd4f' },
+          { id: 'lbl2', text: 'Feature', color: '#10b981' },
         ],
       };
       cardDetailsApi.getCard.mockResolvedValue(cardWithLabels);
@@ -195,7 +201,7 @@ describe('CardModal', () => {
 
       const cardWithNewLabel = {
         ...baseCard,
-        labels: [{ id: 'lbl-new', text: 'Bug', color: '#61bd4f' }],
+        labels: [{ id: 'lbl-new', text: 'Bug', color: '#10b981' }],
       };
       cardDetailsApi.addLabel.mockResolvedValue(cardWithNewLabel);
 
@@ -217,14 +223,14 @@ describe('CardModal', () => {
 
       const addButtons = screen.getAllByRole('button', { name: 'Add' });
       const addLabelButton = addButtons.find(
-        (btn) => btn.closest('.bg-gray-50') || btn.textContent === 'Add'
+        (btn) => btn.closest('.bg-dark-surface') || btn.textContent === 'Add'
       );
       await user.click(addLabelButton);
 
       await waitFor(() => {
         expect(cardDetailsApi.addLabel).toHaveBeenCalledWith('card1', {
           text: 'Bug',
-          color: '#61bd4f',
+          color: '#10b981',
         });
       });
 
@@ -233,7 +239,7 @@ describe('CardModal', () => {
       });
 
       const labelPill = screen.getByText('Bug').closest('span');
-      expect(labelPill).toHaveStyle({ backgroundColor: '#61bd4f' });
+      expect(labelPill).toHaveStyle({ backgroundColor: '#10b981' });
     });
   });
 

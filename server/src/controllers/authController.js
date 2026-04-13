@@ -44,7 +44,9 @@ export async function register(req, res, next) {
     });
 
     // Seed demo boards in the background (don't block registration response)
-    seedDemoBoards(user.id).catch(() => {});
+    if (process.env.NODE_ENV !== 'test') {
+      seedDemoBoards(user.id).catch(() => {});
+    }
 
     res.status(201).json({
       data: { id: user.id, email: user.email, name: user.name },
