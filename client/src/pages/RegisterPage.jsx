@@ -33,16 +33,19 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center px-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-8">
+    <div className="min-h-screen bg-dark-base bg-radial-glow flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-neon-indigo/10 rounded-full blur-3xl animate-glow-pulse glow-orb" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-neon-cyan/5 rounded-full blur-3xl animate-glow-pulse glow-orb" style={{ animationDelay: '1.5s' }} />
+
+      <div className="bg-dark-card border border-dark-border rounded-xl shadow-theme-xl w-full max-w-md p-8 relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Create an account</h1>
-          <p className="text-gray-500 mt-2 text-sm">Get started with Trello Clone</p>
+          <h1 className="text-2xl font-bold text-gradient-heading">Create an account</h1>
+          <p className="text-theme-muted mt-2 text-sm">Get started with Trello Clone</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-theme-tertiary mb-1">
               Name
             </label>
             <input
@@ -52,12 +55,12 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your full name"
               autoComplete="name"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-2.5 text-sm text-theme-primary placeholder-theme-muted outline-none focus:ring-2 focus:ring-neon-indigo/50 focus:border-neon-indigo/50 transition-all"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-theme-tertiary mb-1">
               Email
             </label>
             <input
@@ -67,12 +70,12 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-2.5 text-sm text-theme-primary placeholder-theme-muted outline-none focus:ring-2 focus:ring-neon-indigo/50 focus:border-neon-indigo/50 transition-all"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-theme-tertiary mb-1">
               Password
             </label>
             <input
@@ -82,22 +85,22 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
               autoComplete="new-password"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+              className="w-full bg-dark-surface border border-dark-border rounded-lg px-4 py-2.5 text-sm text-theme-primary placeholder-theme-muted outline-none focus:ring-2 focus:ring-neon-indigo/50 focus:border-neon-indigo/50 transition-all"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-accent text-white py-2.5 rounded-lg font-medium hover:shadow-neon-indigo focus:ring-2 focus:ring-neon-indigo/50 focus:ring-offset-2 focus:ring-offset-dark-card transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-theme-muted mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+          <Link to="/login" className="text-neon-cyan hover:text-cyan-300 font-medium transition-colors">
             Log in
           </Link>
         </p>

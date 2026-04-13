@@ -46,6 +46,10 @@ vi.mock('react-hot-toast', () => ({
   },
 }));
 
+vi.mock('../context/ThemeContext.jsx', () => ({
+  useTheme: () => ({ isDark: true, toggleTheme: vi.fn() }),
+}));
+
 const mockAuthValue = {
   user: { name: 'Test User', email: 'test@example.com' },
   isLoading: false,

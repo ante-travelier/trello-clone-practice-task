@@ -12,11 +12,11 @@ export default function DueDateBadge({ date }) {
   let className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ';
 
   if (diffDays < 0) {
-    className += 'bg-red-500 text-white';
+    className += 'bg-neon-red/20 text-neon-red';
   } else if (diffDays === 0) {
-    className += 'bg-yellow-400 text-gray-900';
+    className += 'bg-neon-yellow/20 text-neon-yellow';
   } else {
-    className += 'bg-gray-200 text-gray-700';
+    className += 'bg-dark-hover text-theme-tertiary';
   }
 
   const formatted = dueDate.toLocaleDateString('en-US', {
@@ -27,12 +27,7 @@ export default function DueDateBadge({ date }) {
   return (
     <span className={className}>
       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
       {formatted}
     </span>

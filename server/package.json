@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --forceExit --detectOpenHandles"
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --forceExit --detectOpenHandles"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",

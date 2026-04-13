@@ -16,8 +16,8 @@ describe('DueDateBadge', () => {
     const badge = screen.getByText(
       pastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     );
-    expect(badge.closest('span')).toHaveClass('bg-red-500');
-    expect(badge.closest('span')).toHaveClass('text-white');
+    expect(badge.closest('span')).toHaveClass('bg-neon-red/20');
+    expect(badge.closest('span')).toHaveClass('text-neon-red');
   });
 
   it('renders a yellow badge when the date is today', () => {
@@ -27,8 +27,8 @@ describe('DueDateBadge', () => {
 
     const formatted = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const badge = screen.getByText(formatted);
-    expect(badge.closest('span')).toHaveClass('bg-yellow-400');
-    expect(badge.closest('span')).toHaveClass('text-gray-900');
+    expect(badge.closest('span')).toHaveClass('bg-neon-yellow/20');
+    expect(badge.closest('span')).toHaveClass('text-neon-yellow');
   });
 
   it('renders a grey badge when the date is in the future', () => {
@@ -39,8 +39,8 @@ describe('DueDateBadge', () => {
 
     const formatted = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const badge = screen.getByText(formatted);
-    expect(badge.closest('span')).toHaveClass('bg-gray-200');
-    expect(badge.closest('span')).toHaveClass('text-gray-700');
+    expect(badge.closest('span')).toHaveClass('bg-dark-hover');
+    expect(badge.closest('span')).toHaveClass('text-theme-tertiary');
   });
 
   it('renders a red badge for yesterday', () => {
@@ -51,7 +51,7 @@ describe('DueDateBadge', () => {
 
     const formatted = yesterday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const badge = screen.getByText(formatted);
-    expect(badge.closest('span')).toHaveClass('bg-red-500');
+    expect(badge.closest('span')).toHaveClass('bg-neon-red/20');
   });
 
   it('renders a grey badge for tomorrow', () => {
@@ -62,7 +62,7 @@ describe('DueDateBadge', () => {
 
     const formatted = tomorrow.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const badge = screen.getByText(formatted);
-    expect(badge.closest('span')).toHaveClass('bg-gray-200');
+    expect(badge.closest('span')).toHaveClass('bg-dark-hover');
   });
 
   it('displays the formatted date text', () => {

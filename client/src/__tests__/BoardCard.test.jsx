@@ -18,6 +18,10 @@ vi.mock('react-hot-toast', () => ({
   },
 }));
 
+vi.mock('../context/ThemeContext.jsx', () => ({
+  useTheme: () => ({ isDark: true, toggleTheme: vi.fn() }),
+}));
+
 const mockAuthValue = {
   user: { name: 'Test User', email: 'test@example.com' },
   isLoading: false,
@@ -43,8 +47,8 @@ describe('BoardCard (within BoardsPage)', () => {
 
   it('renders board title', async () => {
     boardsApi.getBoards.mockResolvedValue([
-      { id: 'b1', title: 'Project Alpha', color: '#0079bf' },
-      { id: 'b2', title: 'Sprint Board', color: '#d29034' },
+      { id: 'b1', title: 'Project Alpha', color: '#0079bf', stats: { totalLists: 2, totalCards: 5, overdue: 0, dueSoon: 0 } },
+      { id: 'b2', title: 'Sprint Board', color: '#d29034', stats: { totalLists: 1, totalCards: 3, overdue: 0, dueSoon: 0 } },
     ]);
 
     renderBoardsPage();
@@ -58,7 +62,7 @@ describe('BoardCard (within BoardsPage)', () => {
 
   it('renders board color as background', async () => {
     boardsApi.getBoards.mockResolvedValue([
-      { id: 'b1', title: 'My Board', color: '#519839' },
+      { id: 'b1', title: 'My Board', color: '#519839', stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } },
     ]);
 
     renderBoardsPage();
@@ -73,7 +77,7 @@ describe('BoardCard (within BoardsPage)', () => {
 
   it('uses default color when board has no color', async () => {
     boardsApi.getBoards.mockResolvedValue([
-      { id: 'b1', title: 'No Color Board' },
+      { id: 'b1', title: 'No Color Board', stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } },
     ]);
 
     renderBoardsPage();
@@ -90,7 +94,7 @@ describe('BoardCard (within BoardsPage)', () => {
     const user = userEvent.setup();
 
     boardsApi.getBoards.mockResolvedValue([
-      { id: 'b1', title: 'Delete Me', color: '#b04632' },
+      { id: 'b1', title: 'Delete Me', color: '#b04632', stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } },
     ]);
 
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
@@ -113,8 +117,8 @@ describe('BoardCard (within BoardsPage)', () => {
     const user = userEvent.setup();
 
     boardsApi.getBoards.mockResolvedValue([
-      { id: 'b1', title: 'Keep Me', color: '#0079bf' },
-      { id: 'b2', title: 'Remove Me', color: '#d29034' },
+      { id: 'b1', title: 'Keep Me', color: '#0079bf', stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } },
+      { id: 'b2', title: 'Remove Me', color: '#d29034', stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } },
     ]);
     boardsApi.deleteBoard.mockResolvedValue({});
 
@@ -146,7 +150,7 @@ describe('BoardCard (within BoardsPage)', () => {
     const user = userEvent.setup();
 
     boardsApi.getBoards.mockResolvedValue([
-      { id: 'b1', title: 'Stay Here', color: '#0079bf' },
+      { id: 'b1', title: 'Stay Here', color: '#0079bf', stats: { totalLists: 0, totalCards: 0, overdue: 0, dueSoon: 0 } },
     ]);
 
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
@@ -174,5 +178,52 @@ describe('BoardCard (within BoardsPage)', () => {
     await waitFor(() => {
       expect(screen.getByText('Create new board')).toBeInTheDocument();
     });
+  });
+
+  it('renders board stats with list and card counts', async () => {
+    boardsApi.getBoards.mockResolvedValue([
+      { id: 'b1', title: 'Stats Board', color: '#0079bf', stats: { totalLists: 3, totalCards: 12, overdue: 2, dueSoon: 4 } },
+    ]);
+
+    renderBoardsPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('Stats Board')).toBeInTheDocument();
+    });
+
+    expect(screen.getByTitle('Lists')).toHaveTextContent('3');
+    expect(screen.getByTitle('Cards')).toHaveTextContent('12');
+    expect(screen.getByTitle('Overdue')).toHaveTextContent('2');
+    expect(screen.getByTitle('Due soon')).toHaveTextContent('4');
+  });
+
+  it('hides overdue indicator when count is zero', async () => {
+    boardsApi.getBoards.mockResolvedValue([
+      { id: 'b1', title: 'No Overdue', color: '#0079bf', stats: { totalLists: 1, totalCards: 5, overdue: 0, dueSoon: 1 } },
+    ]);
+
+    renderBoardsPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('No Overdue')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTitle('Overdue')).not.toBeInTheDocument();
+    expect(screen.getByTitle('Due soon')).toBeInTheDocument();
+  });
+
+  it('hides due-soon indicator when count is zero', async () => {
+    boardsApi.getBoards.mockResolvedValue([
+      { id: 'b1', title: 'No Due Soon', color: '#0079bf', stats: { totalLists: 1, totalCards: 5, overdue: 2, dueSoon: 0 } },
+    ]);
+
+    renderBoardsPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('No Due Soon')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTitle('Due soon')).not.toBeInTheDocument();
+    expect(screen.getByTitle('Overdue')).toBeInTheDocument();
   });
 });
