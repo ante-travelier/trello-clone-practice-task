@@ -183,10 +183,10 @@ export default function BoardView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
         <Header />
         <div className="flex items-center justify-center pt-32">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
         </div>
       </div>
     );
@@ -194,26 +194,24 @@ export default function BoardView() {
 
   if (!board) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
         <Header />
         <div className="flex items-center justify-center pt-32">
-          <p className="text-gray-500 text-lg">Board not found</p>
+          <p className="text-gray-400 text-lg">Board not found</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: board.color || '#0079bf' }}
-    >
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>
       <Header />
 
       {/* Board header */}
       <div className="pt-12">
         <div className="px-4 py-3 flex items-center gap-3">
-          <h1 className="text-lg font-bold text-white drop-shadow">{board.title}</h1>
+          <h1 className="text-lg font-bold text-gradient drop-shadow">{board.title}</h1>
+          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: board.color || '#6366f1', boxShadow: `0 0 10px ${board.color || '#6366f1'}` }} />
         </div>
       </div>
 
@@ -246,7 +244,9 @@ export default function BoardView() {
               {/* Add list */}
               <div className="flex-shrink-0 w-72">
                 {addingList ? (
-                  <div className="bg-gray-100 rounded-xl p-3 shadow-sm">
+                  <div className="rounded-xl p-3 border"
+                    style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
+                  >
                     <input
                       ref={addListInputRef}
                       type="text"
@@ -260,21 +260,20 @@ export default function BoardView() {
                           setNewListTitle('');
                         }
                       }}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 mb-2"
+                      className="w-full rounded-lg px-3 py-2 text-sm outline-none mb-2 text-gray-200"
+                      style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={handleAddList}
-                        className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 transition-colors"
+                        className="text-white px-4 py-1.5 rounded text-sm font-medium transition-colors hover:opacity-90"
+                        style={{ background: 'var(--gradient-accent)' }}
                       >
                         Add list
                       </button>
                       <button
-                        onClick={() => {
-                          setAddingList(false);
-                          setNewListTitle('');
-                        }}
-                        className="text-gray-500 hover:text-gray-700 p-1.5"
+                        onClick={() => { setAddingList(false); setNewListTitle(''); }}
+                        className="text-gray-400 hover:text-gray-200 p-1.5"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -290,7 +289,8 @@ export default function BoardView() {
                 ) : (
                   <button
                     onClick={() => setAddingList(true)}
-                    className="w-full bg-white/25 hover:bg-white/40 text-white rounded-xl px-4 py-3 text-sm font-medium text-left transition-colors flex items-center gap-1"
+                    className="w-full rounded-xl px-4 py-3 text-sm font-medium text-left transition-all flex items-center gap-1 border text-gray-300 hover:text-white hover:border-indigo-500/30"
+                    style={{ background: 'rgba(99, 102, 241, 0.1)', borderColor: 'var(--border)' }}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path

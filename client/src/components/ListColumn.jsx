@@ -82,8 +82,14 @@ export default function ListColumn({ list, index, boardId, onListUpdate, onListD
           <div
             ref={provided.innerRef}
             {...provided.draggableProps}
-            className={`bg-gray-100 rounded-xl w-72 flex-shrink-0 flex flex-col max-h-full shadow-sm
+            className={`rounded-xl w-72 flex-shrink-0 flex flex-col max-h-full border
               ${snapshot.isDragging ? 'shadow-xl rotate-1' : ''}`}
+            style={{
+              background: 'var(--bg-surface)',
+              borderColor: snapshot.isDragging ? 'rgba(99, 102, 241, 0.4)' : 'var(--border)',
+              boxShadow: snapshot.isDragging ? 'var(--glow-hover)' : 'none',
+              ...provided.draggableProps.style,
+            }}
           >
             {/* List header */}
             <div
@@ -104,12 +110,13 @@ export default function ListColumn({ list, index, boardId, onListUpdate, onListD
                       setEditingTitle(false);
                     }
                   }}
-                  className="flex-1 font-semibold text-sm border-2 border-blue-400 rounded px-1.5 py-0.5 outline-none bg-white"
+                  className="flex-1 font-semibold text-sm rounded px-1.5 py-0.5 outline-none text-gray-200"
+                  style={{ background: 'var(--bg-elevated)', border: '2px solid rgba(99, 102, 241, 0.5)' }}
                 />
               ) : (
                 <h3
                   onClick={() => setEditingTitle(true)}
-                  className="flex-1 font-semibold text-sm text-gray-800 cursor-pointer hover:bg-gray-200 rounded px-1.5 py-0.5 truncate"
+                  className="flex-1 font-semibold text-sm text-gray-200 cursor-pointer hover:bg-white/5 rounded px-1.5 py-0.5 truncate"
                 >
                   {list.title}
                 </h3>
@@ -117,7 +124,7 @@ export default function ListColumn({ list, index, boardId, onListUpdate, onListD
 
               <button
                 onClick={handleDeleteList}
-                className="ml-2 text-gray-400 hover:text-red-500 transition-colors p-1 rounded hover:bg-gray-200"
+                className="ml-2 text-gray-500 hover:text-red-400 transition-colors p-1 rounded hover:bg-white/5"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -137,7 +144,7 @@ export default function ListColumn({ list, index, boardId, onListUpdate, onListD
                   ref={droppableProvided.innerRef}
                   {...droppableProvided.droppableProps}
                   className={`flex-1 overflow-y-auto px-2 pb-1 min-h-[4px] transition-colors rounded-lg mx-1 ${
-                    droppableSnapshot.isDraggingOver ? 'bg-blue-50' : ''
+                    droppableSnapshot.isDraggingOver ? 'bg-indigo-500/10' : ''
                   }`}
                 >
                   {(list.cards || []).map((card, cardIndex) => (
@@ -173,21 +180,20 @@ export default function ListColumn({ list, index, boardId, onListUpdate, onListD
                     }}
                     placeholder="Enter a title for this card..."
                     rows={2}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 resize-none shadow-sm"
+                    className="w-full rounded-lg px-3 py-2 text-sm outline-none resize-none text-gray-200"
+                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)' }}
                   />
                   <div className="flex gap-2 mt-1.5">
                     <button
                       onClick={handleAddCard}
-                      className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm font-medium hover:bg-blue-700 transition-colors"
+                      className="text-white px-3 py-1.5 rounded text-sm font-medium transition-colors hover:opacity-90"
+                      style={{ background: 'var(--gradient-accent)' }}
                     >
                       Add card
                     </button>
                     <button
-                      onClick={() => {
-                        setAddingCard(false);
-                        setNewCardTitle('');
-                      }}
-                      className="text-gray-500 hover:text-gray-700 p-1.5"
+                      onClick={() => { setAddingCard(false); setNewCardTitle(''); }}
+                      className="text-gray-400 hover:text-gray-200 p-1.5"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -198,7 +204,7 @@ export default function ListColumn({ list, index, boardId, onListUpdate, onListD
               ) : (
                 <button
                   onClick={() => setAddingCard(true)}
-                  className="w-full text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg px-3 py-2 transition-colors flex items-center gap-1"
+                  className="w-full text-left text-sm text-gray-400 hover:text-gray-200 hover:bg-white/5 rounded-lg px-3 py-2 transition-colors flex items-center gap-1"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

@@ -2,7 +2,150 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark theme (default) */
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-surface: #111827;
+  --bg-surface-hover: #1a2236;
+  --bg-elevated: #1e293b;
+  --border: #1e293b;
+  --border-accent: rgba(99, 102, 241, 0.3);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-indigo: #6366f1;
+  --accent-cyan: #06b6d4;
+  --gradient-accent: linear-gradient(135deg, #6366f1, #06b6d4);
+  --glow-indigo: 0 0 30px rgba(99, 102, 241, 0.15);
+  --glow-cyan: 0 0 30px rgba(6, 182, 212, 0.15);
+  --glow-hover: 0 0 40px rgba(99, 102, 241, 0.25), 0 0 80px rgba(6, 182, 212, 0.1);
+  --header-bg: rgba(10, 14, 26, 0.75);
+  --header-border: rgba(255, 255, 255, 0.1);
+  --dropdown-bg: var(--bg-surface);
+  --dropdown-border: var(--border);
+  --card-text-hover: #e2e8f0;
+  --card-text-secondary: #94a3b8;
+  --input-text: #e2e8f0;
+  --checkbox-border: #4b5563;
+  --focus-ring: rgba(99, 102, 241, 0.5);
+  --btn-secondary-bg: rgba(255, 255, 255, 0.1);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.15);
+  --drag-over-bg: rgba(99, 102, 241, 0.1);
+  --glow-visible: 1;
+}
+
+/* Light theme */
+:root.light {
+  --bg-primary: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f8fafc;
+  --bg-elevated: #f1f5f9;
+  --border: #e2e8f0;
+  --border-accent: rgba(99, 102, 241, 0.4);
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-indigo: #4f46e5;
+  --accent-cyan: #0891b2;
+  --gradient-accent: linear-gradient(135deg, #4f46e5, #0891b2);
+  --glow-indigo: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --glow-cyan: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --glow-hover: 0 4px 20px rgba(99, 102, 241, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --header-border: rgba(0, 0, 0, 0.08);
+  --dropdown-bg: #ffffff;
+  --dropdown-border: #e2e8f0;
+  --card-text-hover: #1e293b;
+  --card-text-secondary: #475569;
+  --input-text: #1e293b;
+  --checkbox-border: #cbd5e1;
+  --focus-ring: rgba(79, 70, 229, 0.4);
+  --btn-secondary-bg: rgba(0, 0, 0, 0.05);
+  --btn-secondary-hover: rgba(0, 0, 0, 0.1);
+  --drag-over-bg: rgba(99, 102, 241, 0.08);
+  --glow-visible: 0;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
+
+/* Radial background glows (dark only) */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--glow-visible);
+  transition: opacity 0.3s ease;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--glow-visible);
+  transition: opacity 0.3s ease;
+}
+
+/* Gradient text utility */
+.text-gradient {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neon glow on hover */
+.neon-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+.neon-hover:hover {
+  box-shadow: var(--glow-hover);
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Toast overrides */
+[data-sonner-toaster] {
+  --normal-bg: var(--bg-surface) !important;
+  --normal-text: var(--text-primary) !important;
+  --normal-border: var(--border) !important;
+}
+
+/* Light mode overrides for Tailwind text colors used inline */
+:root.light .text-gray-200 { color: #334155; }
+:root.light .text-gray-300 { color: #475569; }
+:root.light .text-gray-400 { color: #64748b; }
+:root.light .text-gray-500 { color: #94a3b8; }
