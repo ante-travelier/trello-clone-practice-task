@@ -1,8 +1,8 @@
-import { z } from 'zod';
-import prisma from '../prisma/client.js';
+import { z } from "zod";
+import prisma from "../prisma/client.js";
 
 const createBoardSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, "Title is required"),
   color: z.string().optional(),
 });
 
@@ -15,10 +15,46 @@ export async function getBoards(req, res, next) {
   try {
     const boards = await prisma.board.findMany({
       where: { ownerId: req.userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
+      include: {
+        lists: {
+          select: {
+            cards: {
+              select: { dueDate: true },
+            },
+          },
+        },
+      },
     });
 
-    res.json({ data: boards });
+    const now = new Date();
+    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+
+    const boardsWithStats = boards.map((board) => {
+      const allCards = board.lists.flatMap((l) => l.cards);
+      const listCount = board.lists.length;
+      const totalCards = allCards.length;
+      const overdueCount = allCards.filter(
+        (c) => c.dueDate && new Date(c.dueDate) < now,
+      ).length;
+      const dueSoonCount = allCards.filter(
+        (c) =>
+          c.dueDate &&
+          new Date(c.dueDate) >= now &&
+          new Date(c.dueDate) <= fiveDaysFromNow,
+      ).length;
+
+      const { lists: _lists, ...boardFields } = board;
+      return {
+        ...boardFields,
+        listCount,
+        totalCards,
+        overdueCount,
+        dueSoonCount,
+      };
+    });
+
+    res.json({ data: boardsWithStats });
   } catch (error) {
     next(error);
   }
@@ -51,10 +87,10 @@ export async function getBoard(req, res, next) {
       where: { id: req.params.id },
       include: {
         lists: {
-          orderBy: { position: 'asc' },
+          orderBy: { position: "asc" },
           include: {
             cards: {
-              orderBy: { position: 'asc' },
+              orderBy: { position: "asc" },
               include: { labels: true },
             },
           },
@@ -63,11 +99,11 @@ export async function getBoard(req, res, next) {
     });
 
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: "Board not found" });
     }
 
     if (board.ownerId !== req.userId) {
-      return res.status(403).json({ error: 'Access denied' });
+      return res.status(403).json({ error: "Access denied" });
     }
 
     res.json({ data: board });
@@ -88,11 +124,11 @@ export async function updateBoard(req, res, next) {
     });
 
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: "Board not found" });
     }
 
     if (board.ownerId !== req.userId) {
-      return res.status(403).json({ error: 'Access denied' });
+      return res.status(403).json({ error: "Access denied" });
     }
 
     const updated = await prisma.board.update({
@@ -113,16 +149,16 @@ export async function deleteBoard(req, res, next) {
     });
 
     if (!board) {
-      return res.status(404).json({ error: 'Board not found' });
+      return res.status(404).json({ error: "Board not found" });
     }
 
     if (board.ownerId !== req.userId) {
-      return res.status(403).json({ error: 'Access denied' });
+      return res.status(403).json({ error: "Access denied" });
     }
 
     await prisma.board.delete({ where: { id: req.params.id } });
 
-    res.json({ data: { message: 'Board deleted' } });
+    res.json({ data: { message: "Board deleted" } });
   } catch (error) {
     next(error);
   }

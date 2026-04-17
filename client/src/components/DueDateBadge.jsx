@@ -4,29 +4,45 @@ export default function DueDateBadge({ date }) {
   const dueDate = new Date(date);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dueDateNormalized = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+  const dueDateNormalized = new Date(
+    dueDate.getFullYear(),
+    dueDate.getMonth(),
+    dueDate.getDate(),
+  );
 
   const diffMs = dueDateNormalized.getTime() - today.getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
-  let className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ';
+  let className =
+    "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold ";
 
   if (diffDays < 0) {
-    className += 'bg-red-500 text-white';
+    className +=
+      "bg-red-500/20 text-red-400 dark:bg-red-500/15 dark:text-red-400 border border-red-500/20";
   } else if (diffDays === 0) {
-    className += 'bg-yellow-400 text-gray-900';
+    className +=
+      "bg-amber-500/20 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400 border border-amber-500/20";
+  } else if (diffDays <= 2) {
+    className +=
+      "bg-yellow-500/15 text-yellow-600 dark:bg-yellow-500/10 dark:text-yellow-400 border border-yellow-500/15";
   } else {
-    className += 'bg-gray-200 text-gray-700';
+    className +=
+      "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400 border border-gray-200 dark:border-white/10";
   }
 
-  const formatted = dueDate.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
+  const formatted = dueDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
   });
 
   return (
     <span className={className}>
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-3 h-3"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"

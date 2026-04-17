@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trello Clone — App Overview</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1e2530;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --grad-start: #6366f1;
+    --grad-end: #06b6d4;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --orange: #db6d28;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Background glow */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99,102,241,.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(6,182,212,.10) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 1060px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* Hero */
+  header {
+    padding: 64px 0 48px;
+    text-align: center;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+  .subtitle { color: var(--muted); font-size: 1.05rem; margin-top: 8px; }
+
+  /* Nav tabs */
+  .nav {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+    padding-bottom: 0;
+  }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: .95rem; font-weight: 500;
+    padding: 10px 20px; border-bottom: 2px solid transparent;
+    transition: color .2s, border-color .2s;
+    position: relative; bottom: -1px;
+  }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-btn:hover:not(.active) { color: var(--text); }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Section heading */
+  .sec-heading {
+    font-size: 1.4rem; font-weight: 700;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sec-heading .tag {
+    font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 20px;
+    background: linear-gradient(90deg, rgba(99,102,241,.2), rgba(6,182,212,.2));
+    color: var(--accent);
+    border: 1px solid rgba(88,166,255,.2);
+  }
+
+  /* Cards grid */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: box-shadow .2s, border-color .2s, transform .2s;
+  }
+  .card:hover {
+    border-color: rgba(88,166,255,.4);
+    box-shadow: 0 0 20px rgba(88,166,255,.1);
+    transform: translateY(-2px);
+  }
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+  .card p { font-size: .875rem; color: var(--muted); line-height: 1.55; }
+
+  /* Feature list */
+  .feature-list { list-style: none; }
+  .feature-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .9rem;
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-list .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(var(--grad-start), var(--grad-end));
+    margin-top: 7px; flex-shrink: 0;
+  }
+
+  /* Stack layer diagram */
+  .stack-diagram { display: flex; flex-direction: column; gap: 4px; margin: 24px 0; }
+  .stack-layer {
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: .875rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid var(--border);
+  }
+  .stack-layer .layer-label { font-weight: 600; letter-spacing: .04em; }
+  .stack-layer .layer-tech { color: var(--muted); font-size: .825rem; }
+  .layer-client  { background: rgba(99,102,241,.12); border-color: rgba(99,102,241,.3); }
+  .layer-gateway { background: rgba(6,182,212,.08);  border-color: rgba(6,182,212,.25); }
+  .layer-server  { background: rgba(63,185,80,.08);  border-color: rgba(63,185,80,.25); }
+  .layer-db      { background: rgba(188,140,255,.08);border-color: rgba(188,140,255,.25); }
+
+  /* Code block */
+  pre {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    font-size: .82rem;
+    line-height: 1.6;
+    color: #a5d6ff;
+    margin: 16px 0;
+  }
+  code { font-family: 'Fira Code', 'Cascadia Code', ui-monospace, monospace; }
+
+  /* Badge */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: .78rem; font-weight: 600;
+    border: 1px solid currentColor;
+  }
+  .badge-blue   { color: var(--accent);  background: rgba(88,166,255,.1); }
+  .badge-green  { color: var(--green);   background: rgba(63,185,80,.1); }
+  .badge-yellow { color: var(--yellow);  background: rgba(210,153,34,.1); }
+  .badge-red    { color: var(--red);     background: rgba(248,81,73,.1); }
+  .badge-purple { color: var(--purple);  background: rgba(188,140,255,.1); }
+  .badge-orange { color: var(--orange);  background: rgba(219,109,40,.1); }
+
+  /* Test suite table */
+  table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: 8px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* Insight box */
+  .insight {
+    background: linear-gradient(135deg, rgba(99,102,241,.1), rgba(6,182,212,.06));
+    border: 1px solid rgba(88,166,255,.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: .875rem;
+    color: var(--muted);
+    margin-top: 20px;
+  }
+  .insight strong { color: var(--accent); }
+
+  /* Warning box */
+  .warning {
+    background: rgba(248,81,73,.06);
+    border: 1px solid rgba(248,81,73,.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: .875rem;
+    color: #f0a0a0;
+    margin-top: 20px;
+    display: flex; gap: 10px;
+  }
+  .warning-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+  /* Auth flow */
+  .flow {
+    display: flex; align-items: center; gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .flow-step {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: .83rem;
+    text-align: center;
+    min-width: 110px;
+  }
+  .flow-arrow { color: var(--muted); padding: 0 6px; font-size: 1.1rem; }
+  .flow-step strong { display: block; font-size: .75rem; color: var(--muted); margin-bottom: 2px; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📋</div>
+    </div>
+    <h1>Trello Clone</h1>
+    <p class="subtitle">App Overview &mdash; Product · Architecture · Tests</p>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="show('product', this)">Product</button>
+    <button class="nav-btn" onclick="show('arch', this)">Architecture &amp; Tech</button>
+    <button class="nav-btn" onclick="show('tests', this)">Tests</button>
+  </nav>
+
+  <!-- ──────────── PRODUCT ──────────── -->
+  <section id="product" class="section active">
+    <div class="sec-heading">Product Features <span class="tag">User-facing</span></div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-icon" style="background:rgba(88,166,255,.15)">🔐</div>
+        <h3>Authentication</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Register with name, email, password</li>
+          <li><span class="dot"></span>Login with JWT access + refresh tokens</li>
+          <li><span class="dot"></span>Auto-refresh: tokens renew silently on expiry</li>
+          <li><span class="dot"></span>Protected routes redirect unauthenticated users</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(63,185,80,.15)">🗂️</div>
+        <h3>Boards</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Create boards with title and custom color</li>
+          <li><span class="dot"></span>6 preset color swatches</li>
+          <li><span class="dot"></span>View all boards in a responsive grid</li>
+          <li><span class="dot"></span>Delete boards (with confirmation)</li>
+          <li><span class="dot"></span>Navigate into a board to manage lists &amp; cards</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(188,140,255,.15)">📄</div>
+        <h3>Lists</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Add lists to a board</li>
+          <li><span class="dot"></span>Rename lists inline</li>
+          <li><span class="dot"></span>Delete lists</li>
+          <li><span class="dot"></span>Drag &amp; drop to reorder lists within a board</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(210,153,34,.15)">🃏</div>
+        <h3>Cards</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Add cards to lists</li>
+          <li><span class="dot"></span>Drag &amp; drop between lists and within a list</li>
+          <li><span class="dot"></span>Move cards to different lists</li>
+          <li><span class="dot"></span>Delete cards</li>
+          <li><span class="dot"></span>Open card modal for detailed editing</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(219,109,40,.15)">📝</div>
+        <h3>Card Details (Modal)</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Inline title editing (click to edit)</li>
+          <li><span class="dot"></span>Rich description textarea</li>
+          <li><span class="dot"></span>Colored labels with custom text</li>
+          <li><span class="dot"></span>Due dates with visual status badge</li>
+          <li><span class="dot"></span>Checklists with progress bar and item toggle</li>
+          <li><span class="dot"></span>Escape key / backdrop click to close</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(248,81,73,.15)">⏰</div>
+        <h3>Due Dates &amp; Status</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Date picker per card</li>
+          <li><span class="dot"></span>DueDateBadge shows: "Due soon" (yellow) or "Overdue" (red)</li>
+          <li><span class="dot"></span>Badge visible on card tile and inside modal</li>
+          <li><span class="dot"></span>Remove due date with one click</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── ARCHITECTURE ──────────── -->
+  <section id="arch" class="section">
+    <div class="sec-heading">Architecture &amp; Tech Stack <span class="tag">Engineering</span></div>
+
+    <div class="stack-diagram">
+      <div class="stack-layer layer-client">
+        <span class="layer-label">Client (Browser)</span>
+        <span class="layer-tech">React 18 · Vite 5 · Tailwind 3 · React Router 6 · Axios · @hello-pangea/dnd</span>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:1.3rem;line-height:1">↕</div>
+      <div class="stack-layer layer-gateway">
+        <span class="layer-label">HTTP API</span>
+        <span class="layer-tech">REST — JSON · <code>{ data: ... }</code> envelope · Bearer token auth</span>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:1.3rem;line-height:1">↕</div>
+      <div class="stack-layer layer-server">
+        <span class="layer-label">Server</span>
+        <span class="layer-tech">Node.js · Express 4 · Prisma 6 ORM · JWT (access + refresh) · Zod validation · bcryptjs</span>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:1.3rem;line-height:1">↕</div>
+      <div class="stack-layer layer-db">
+        <span class="layer-label">Database</span>
+        <span class="layer-tech">PostgreSQL — CUIDs · Float positions · Cascade deletes</span>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:32px">
+      <div class="card">
+        <h3 style="margin-bottom:14px">API Routes</h3>
+        <pre><code>POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+POST   /api/auth/refresh
+
+GET    /api/boards
+POST   /api/boards
+PATCH  /api/boards/:id
+DELETE /api/boards/:id
+
+GET/POST/PATCH/DELETE  /api/boards/:id/lists
+GET/POST/PATCH/DELETE  /api/lists/:id/cards
+GET/PATCH/DELETE       /api/cards/:id
+GET/POST/DELETE        /api/cards/:id  (labels, checklists)</code></pre>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px">Auth Flow</h3>
+        <div class="flow">
+          <div class="flow-step"><strong>Login</strong>POST /auth/login</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step"><strong>Access token</strong>JS memory</div>
+          <span class="flow-arrow">+</span>
+          <div class="flow-step"><strong>Refresh token</strong>httpOnly cookie</div>
+        </div>
+        <div class="flow" style="margin-top:8px">
+          <div class="flow-step"><strong>Token expires</strong>401 response</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step"><strong>Axios interceptor</strong>POST /auth/refresh</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step"><strong>Retry original</strong>request</div>
+        </div>
+        <div class="insight" style="margin-top:14px">
+          <strong>XSS prevention:</strong> access token never touches localStorage — lives only in React Context memory.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px">Data Models</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span><strong>User</strong> — id, email, password (hashed), name</li>
+          <li><span class="dot"></span><strong>Board</strong> — id, title, color, ownerId</li>
+          <li><span class="dot"></span><strong>List</strong> — id, title, position (Float), boardId</li>
+          <li><span class="dot"></span><strong>Card</strong> — id, title, description?, position, dueDate?, listId</li>
+          <li><span class="dot"></span><strong>Label</strong> — id, text, color, cardId</li>
+          <li><span class="dot"></span><strong>Checklist</strong> — id, title, cardId</li>
+          <li><span class="dot"></span><strong>ChecklistItem</strong> — id, text, checked, checklistId</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px">Key Design Decisions</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span><strong>Float positions</strong> for drag-and-drop — no full re-index on each move; gap inserted between neighbours</li>
+          <li><span class="dot"></span><strong>@hello-pangea/dnd</strong> chosen over react-beautiful-dnd (maintained fork, same API)</li>
+          <li><span class="dot"></span><strong>Cascade deletes</strong> in Prisma schema — delete a board removes all lists → cards → labels/checklists</li>
+          <li><span class="dot"></span><strong>Zod</strong> validates all incoming request bodies server-side</li>
+          <li><span class="dot"></span><strong>Context API</strong> only — no Redux/Zustand; auth state is the single global store</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:16px">
+      <div class="card" style="text-align:center">
+        <span class="badge badge-blue">React 18</span>
+        <p style="margin-top:8px;font-size:.82rem">UI framework</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="badge badge-green">Prisma 6</span>
+        <p style="margin-top:8px;font-size:.82rem">ORM + migrations</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="badge badge-purple">Express 4</span>
+        <p style="margin-top:8px;font-size:.82rem">HTTP server</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="badge badge-yellow">PostgreSQL</span>
+        <p style="margin-top:8px;font-size:.82rem">Relational DB</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="badge badge-orange">Vite 5</span>
+        <p style="margin-top:8px;font-size:.82rem">Build &amp; HMR</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="badge badge-red">JWT</span>
+        <p style="margin-top:8px;font-size:.82rem">Auth tokens</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── TESTS ──────────── -->
+  <section id="tests" class="section">
+    <div class="sec-heading">Test Suite <span class="tag">Quality</span></div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-icon" style="background:rgba(63,185,80,.15)">🧪</div>
+        <h3>Client — Unit &amp; Component Tests</h3>
+        <p style="margin-bottom:14px;font-size:.875rem;color:var(--muted)">Vitest + React Testing Library · Located in <code>client/src/__tests__/</code></p>
+        <table>
+          <thead><tr><th>File</th><th>Covers</th></tr></thead>
+          <tbody>
+            <tr><td>AuthContext.test.jsx</td><td>login, logout, token refresh flow</td></tr>
+            <tr><td>BoardCard.test.jsx</td><td>board card renders, delete button</td></tr>
+            <tr><td>BoardView.test.jsx</td><td>list/card display, drag-drop</td></tr>
+            <tr><td>CardModal.test.jsx</td><td>modal interactions, checklist, labels</td></tr>
+            <tr><td>DueDateBadge.test.jsx</td><td>overdue / due-soon / no badge states</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(88,166,255,.15)">⚙️</div>
+        <h3>Server — Unit &amp; Integration Tests</h3>
+        <p style="margin-bottom:14px;font-size:.875rem;color:var(--muted)">Jest + Supertest · Located in <code>server/src/__tests__/</code></p>
+        <table>
+          <thead><tr><th>File</th><th>Covers</th></tr></thead>
+          <tbody>
+            <tr><td>auth.test.js</td><td>register, login, refresh, logout</td></tr>
+            <tr><td>boards.test.js</td><td>CRUD boards, ownership checks</td></tr>
+            <tr><td>lists.test.js</td><td>CRUD lists, position logic</td></tr>
+            <tr><td>cards.test.js</td><td>CRUD cards, move between lists</td></tr>
+            <tr><td>middleware.test.js</td><td>auth middleware, 401/403 responses</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(188,140,255,.15)">🎭</div>
+        <h3>E2E — Playwright</h3>
+        <p style="margin-bottom:14px;font-size:.875rem;color:var(--muted)">Located in <code>e2e/tests/</code> · Needs both servers running</p>
+        <table>
+          <thead><tr><th>Spec</th><th>Covers</th></tr></thead>
+          <tbody>
+            <tr><td>auth.spec.ts</td><td>full register + login + logout flow</td></tr>
+            <tr><td>boards.spec.ts</td><td>create/delete boards end-to-end</td></tr>
+            <tr><td>lists-cards.spec.ts</td><td>add lists, add cards, drag reorder</td></tr>
+            <tr><td>card-detail.spec.ts</td><td>open modal, add label, due date, checklist</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-icon" style="background:rgba(210,153,34,.15)">📸</div>
+        <h3>Screenshot Fixtures</h3>
+        <p style="margin-bottom:14px;font-size:.875rem;color:var(--muted)">Manual reference screenshots in <code>e2e/screenshots/manual/</code></p>
+        <ul class="feature-list">
+          <li><span class="dot"></span>01-login.png</li>
+          <li><span class="dot"></span>02-register.png</li>
+          <li><span class="dot"></span>03-boards-empty.png</li>
+          <li><span class="dot"></span>04-boards-with-data.png</li>
+          <li><span class="dot"></span>05-board-view.png</li>
+          <li><span class="dot"></span>06-card-modal.png</li>
+          <li><span class="dot"></span>07-card-modal-overdue.png</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px">
+      <div class="card">
+        <h3 style="margin-bottom:12px">Run Tests</h3>
+        <pre><code># Client unit tests
+cd client && npm test
+
+# Server unit tests
+cd server && npm test
+
+# E2E tests (servers must be running)
+cd e2e && npx playwright test</code></pre>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px">Test Configuration</h3>
+        <ul class="feature-list">
+          <li><span class="dot"></span>Client: <code>client/vite.config.js</code> → vitest config</li>
+          <li><span class="dot"></span>Server: <code>server/jest.config.js</code> → ESM-compatible</li>
+          <li><span class="dot"></span>E2E: <code>e2e/playwright.config.ts</code></li>
+          <li><span class="dot"></span>Shared test helpers: <code>e2e/fixtures/test-helpers.ts</code></li>
+          <li><span class="dot"></span>Server setup: <code>server/src/__tests__/setup.js</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="warning">
+      <span class="warning-icon">⚠️</span>
+      <div>
+        <strong style="display:block;margin-bottom:4px;color:#f85149">Critical: Separate Test Database Required</strong>
+        Server tests truncate ALL tables on each run. Never point <code>NODE_ENV=test</code> at your development database. Configure a separate PostgreSQL DB in <code>server/.env.test</code>.
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
