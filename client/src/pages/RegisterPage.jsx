@@ -33,16 +33,30 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center px-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Decorative glows */}
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl" />
+
+      <div className="glass-panel rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Create an account</h1>
-          <p className="text-gray-500 mt-2 text-sm">Get started with Trello Clone</p>
+          <div className="inline-flex items-center gap-2 mb-4">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight">
+            <span className="text-gradient">Create</span>{' '}
+            <span className="font-display italic font-normal text-zinc-200">account</span>
+          </h1>
+          <p className="text-zinc-500 mt-2.5 text-sm">Start organising with Trello Clone</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="name" className="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wider">
               Name
             </label>
             <input
@@ -52,12 +66,12 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your full name"
               autoComplete="name"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+              className="input-dark w-full rounded-lg px-4 py-2.5 text-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wider">
               Email
             </label>
             <input
@@ -67,12 +81,12 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+              className="input-dark w-full rounded-lg px-4 py-2.5 text-sm"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wider">
               Password
             </label>
             <input
@@ -82,22 +96,22 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
               autoComplete="new-password"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+              className="input-dark w-full rounded-lg px-4 py-2.5 text-sm"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-gradient w-full py-2.5 rounded-lg font-semibold text-sm tracking-wide"
           >
             {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-zinc-500 mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+          <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
             Log in
           </Link>
         </p>
