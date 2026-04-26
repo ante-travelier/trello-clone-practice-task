@@ -9,14 +9,14 @@ export default function DueDateBadge({ date }) {
   const diffMs = dueDateNormalized.getTime() - today.getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
-  let className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ';
+  let className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border ';
 
   if (diffDays < 0) {
-    className += 'bg-red-500 text-white';
+    className += 'bg-red-500/15 text-red-300 border-red-500/30';
   } else if (diffDays === 0) {
-    className += 'bg-yellow-400 text-gray-900';
+    className += 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30';
   } else {
-    className += 'bg-gray-200 text-gray-700';
+    className += 'bg-white/5 text-zinc-400 border-white/10';
   }
 
   const formatted = dueDate.toLocaleDateString('en-US', {
