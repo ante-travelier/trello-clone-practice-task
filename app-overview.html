@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trello Clone — App Overview</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #1e2736;
+      --border:    #30363d;
+      --accent:    #58a6ff;
+      --accent2:   #3fb950;
+      --accent3:   #d2a8ff;
+      --accent4:   #ffa657;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --tag-bg:    #1f2d3d;
+      --radius:    10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 32px;
+      height: 56px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      text-decoration: none;
+      margin-right: auto;
+    }
+
+    .nav-logo svg { flex-shrink: 0; }
+
+    nav a.tab {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .15s, background .15s;
+    }
+
+    nav a.tab:hover { color: var(--text); background: var(--surface2); }
+    nav a.tab.active { color: var(--accent); background: var(--tag-bg); }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 64px;
+      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(88,166,255,.12) 0%, transparent 70%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--tag-bg);
+      border: 1px solid rgba(88,166,255,.3);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #e6edf3 30%, #58a6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 32px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 72px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .section-label span {
+      display: inline-block;
+      width: 20px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+
+    /* ── CARDS GRID ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color .2s, transform .2s;
+    }
+
+    .card:hover { border-color: rgba(88,166,255,.4); transform: translateY(-2px); }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      font-size: 18px;
+    }
+
+    .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .card p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    .arch-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      margin-bottom: 32px;
+      overflow-x: auto;
+    }
+
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: nowrap;
+      min-width: 560px;
+    }
+
+    .arch-node {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 20px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .arch-node .node-title { font-size: 13px; font-weight: 600; }
+    .arch-node .node-sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    .arch-node.blue  { border-color: rgba(88,166,255,.5); }
+    .arch-node.green { border-color: rgba(63,185,80,.5); }
+    .arch-node.purple{ border-color: rgba(210,168,255,.5); }
+    .arch-node.orange{ border-color: rgba(255,166,87,.5); }
+
+    .arch-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 6px;
+      gap: 2px;
+    }
+
+    .arch-arrow .label { font-size: 10px; color: var(--muted); white-space: nowrap; }
+    .arch-arrow .line  {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      position: relative;
+    }
+    .arch-arrow .line::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: -3px;
+      border: 4px solid transparent;
+      border-left-color: var(--border);
+    }
+
+    /* ── DB SCHEMA ── */
+    .schema-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .schema-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .schema-header {
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .schema-fields { padding: 10px 14px; }
+
+    .schema-field {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(48,54,61,.5);
+    }
+
+    .schema-field:last-child { border-bottom: none; }
+
+    .field-name { color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; }
+    .field-type { color: var(--muted); font-size: 11px; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .field-pk   { color: var(--accent4); }
+    .field-fk   { color: var(--accent3); }
+    .field-opt  { color: var(--accent2); }
+
+    /* ── TECH STACK TABLE ── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 600px) { .stack-grid { grid-template-columns: 1fr; } }
+
+    .stack-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .stack-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    .stack-row h4 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .stack-row p  { font-size: 12px; color: var(--muted); }
+
+    /* ── AUTH FLOW ── */
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 32px;
+    }
+
+    .flow-step {
+      position: relative;
+      padding: 16px 0 16px 24px;
+      border-left: 2px solid var(--border);
+    }
+
+    .flow-step:last-child { border-left-color: transparent; }
+
+    .flow-step::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 20px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+
+    .flow-step h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .flow-step p  { font-size: 12px; color: var(--muted); }
+    .flow-step code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      background: var(--tag-bg);
+      color: var(--accent);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── TEST TABLES ── */
+    .test-suite {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .test-suite-header {
+      padding: 14px 20px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .test-suite-header h3 { font-size: 14px; font-weight: 600; }
+
+    .test-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+
+    .badge-e2e     { background: rgba(255,166,87,.15); color: var(--accent4); }
+    .badge-server  { background: rgba(63,185,80,.15);  color: var(--accent2); }
+    .badge-client  { background: rgba(88,166,255,.15); color: var(--accent); }
+
+    .test-file-tag {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .test-cases { padding: 0; }
+
+    .test-case {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 20px;
+      border-bottom: 1px solid rgba(48,54,61,.5);
+      font-size: 13px;
+    }
+
+    .test-case:last-child { border-bottom: none; }
+
+    .test-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* ── SECTION SUBHEADINGS (architecture) ── */
+    .subsection-h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      margin-top: 40px;
+    }
+
+    .test-desc { color: var(--text); line-height: 1.4; }
+    .test-desc span { color: var(--muted); font-size: 12px; display: block; margin-top: 1px; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── CODE INLINE ── */
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      background: var(--tag-bg);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── ENDPOINT TABLE ── */
+    .endpoint-group { margin-bottom: 28px; }
+    .endpoint-group h4 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .endpoint {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .method {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .method.get    { background: rgba(63,185,80,.15);  color: var(--accent2); }
+    .method.post   { background: rgba(88,166,255,.15); color: var(--accent); }
+    .method.patch  { background: rgba(255,166,87,.15); color: var(--accent4); }
+    .method.delete { background: rgba(248,81,73,.15);  color: #f85149; }
+
+    .ep-path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+    .ep-desc { font-size: 12px; color: var(--muted); text-align: right; }
+
+    .protected-tag {
+      font-size: 10px;
+      color: var(--accent3);
+      background: rgba(210,168,255,.1);
+      border: 1px solid rgba(210,168,255,.2);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <rect x="2" y="3" width="8" height="14" rx="2" fill="#58a6ff"/>
+      <rect x="14" y="3" width="8" height="9" rx="2" fill="#3fb950"/>
+    </svg>
+    Trello Clone
+  </a>
+  <a href="#product"      class="tab active">Product</a>
+  <a href="#architecture" class="tab">Architecture</a>
+  <a href="#tests"        class="tab">Tests</a>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#3fb950"/></svg>
+    Portfolio Project
+  </div>
+  <h1>Trello Clone</h1>
+  <p>A full-stack project management app — boards, lists, cards, drag-and-drop, labels, checklists, and JWT auth.</p>
+  <div class="hero-pills">
+    <span class="pill">React 18</span>
+    <span class="pill">Vite 5</span>
+    <span class="pill">Tailwind CSS</span>
+    <span class="pill">Node.js + Express</span>
+    <span class="pill">PostgreSQL</span>
+    <span class="pill">Prisma ORM</span>
+    <span class="pill">JWT Auth</span>
+    <span class="pill">Playwright E2E</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 1 — PRODUCT
+══════════════════════════════════════════════════ -->
+<section id="product">
+  <div class="section-label"><span></span>Section 1</div>
+  <h2>Product</h2>
+  <p class="section-sub">What the app does and the features a user can interact with.</p>
+
+  <div class="card-grid">
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(88,166,255,.12);">🔐</div>
+      <h3>Authentication</h3>
+      <p>Register with name, email and password. Login issues a short-lived JWT (15 min) kept in memory — never localStorage — plus a 7-day refresh token in an httpOnly cookie for silent re-auth.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(63,185,80,.12);">🗂️</div>
+      <h3>Boards Dashboard</h3>
+      <p>After login, see a grid of all your boards. Create a board with a title and one of six preset colours. Delete any board (with a confirmation step). New accounts get two pre-filled demo boards automatically.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(255,166,87,.12);">📋</div>
+      <h3>Lists</h3>
+      <p>Inside a board, add named columns (lists). Rename a list by clicking its title inline. Delete a list — all its cards are removed too. Lists scroll horizontally when there are many.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(210,168,255,.12);">🃏</div>
+      <h3>Cards</h3>
+      <p>Add cards to any list with a quick inline form. Cards show a colour-coded due-date badge (red = overdue, yellow = today, grey = future) and label colour dots at a glance.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(88,166,255,.12);">🖱️</div>
+      <h3>Drag & Drop</h3>
+      <p>Drag cards within a list to reorder them, or drop them into a different list. Drag entire lists left and right. Positions are persisted to the server instantly; on failure the UI rolls back.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(63,185,80,.12);">📝</div>
+      <h3>Card Detail Modal</h3>
+      <p>Click any card to open a full detail panel without leaving the board. Edit the title inline, write a description, set a due date, and close with the × button or by clicking the backdrop.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(255,166,87,.12);">🏷️</div>
+      <h3>Labels</h3>
+      <p>Inside the card modal, add colour labels with custom text. Labels appear as coloured pills in the modal and as small colour dots on the card tile in the board view. Remove any label with ×.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon" style="background:rgba(210,168,255,.12);">✅</div>
+      <h3>Checklists</h3>
+      <p>Add one or more named checklists to a card. Each checklist shows a live progress bar (e.g. 3 / 5 items checked). Add, check off, and delete individual items. Delete the whole checklist at once.</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 2 — ARCHITECTURE
+══════════════════════════════════════════════════ -->
+<section id="architecture">
+  <div class="section-label"><span></span>Section 2</div>
+  <h2>Architecture &amp; Tech</h2>
+  <p class="section-sub">How the layers connect, what each piece does, and why certain choices were made.</p>
+
+  <!-- Data flow diagram -->
+  <div class="arch-diagram">
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:20px;letter-spacing:.06em;text-transform:uppercase;">Request / Response Flow</div>
+    <div class="arch-flow">
+      <div class="arch-node blue">
+        <div class="node-title">React SPA</div>
+        <div class="node-sub">Vite · Tailwind · Axios</div>
+      </div>
+      <div class="arch-arrow">
+        <div class="label">JWT Bearer</div>
+        <div class="line"></div>
+      </div>
+      <div class="arch-node green">
+        <div class="node-title">Express API</div>
+        <div class="node-sub">Node.js · REST · Zod</div>
+      </div>
+      <div class="arch-arrow">
+        <div class="label">Prisma ORM</div>
+        <div class="line"></div>
+      </div>
+      <div class="arch-node purple">
+        <div class="node-title">Prisma Client</div>
+        <div class="node-sub">Type-safe queries</div>
+      </div>
+      <div class="arch-arrow">
+        <div class="label">TCP / SQL</div>
+        <div class="line"></div>
+      </div>
+      <div class="arch-node orange">
+        <div class="node-title">PostgreSQL</div>
+        <div class="node-sub">Relational DB</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack rows -->
+  <div class="stack-grid">
+    <div class="stack-row">
+      <div class="stack-dot" style="background:#58a6ff;"></div>
+      <div>
+        <h4>React 18 + Vite 5</h4>
+        <p>Single-page app. React Context manages auth state and board state. Axios interceptors automatically attach the Bearer token and retry requests after a silent token refresh.</p>
+      </div>
+    </div>
+    <div class="stack-row">
+      <div class="stack-dot" style="background:#3fb950;"></div>
+      <div>
+        <h4>Node.js + Express 4</h4>
+        <p>REST API on port 4000. All routes under <code>/api/boards</code>, <code>/api/lists</code>, <code>/api/cards</code> are protected by JWT middleware. Input validated with Zod schemas.</p>
+      </div>
+    </div>
+    <div class="stack-row">
+      <div class="stack-dot" style="background:#d2a8ff;"></div>
+      <div>
+        <h4>Prisma ORM + PostgreSQL</h4>
+        <p>Seven models: User, Board, List, Card, Label, Checklist, ChecklistItem. Cascading deletes ensure referential integrity — deleting a board removes all lists, cards, and their details.</p>
+      </div>
+    </div>
+    <div class="stack-row">
+      <div class="stack-dot" style="background:#ffa657;"></div>
+      <div>
+        <h4>JWT Authentication</h4>
+        <p>Access tokens (15 min) stored in React memory — not localStorage — to prevent XSS. Refresh tokens (7 days) in httpOnly cookies so JavaScript can never read them.</p>
+      </div>
+    </div>
+    <div class="stack-row">
+      <div class="stack-dot" style="background:#58a6ff;"></div>
+      <div>
+        <h4>@hello-pangea/dnd</h4>
+        <p>Maintained fork of react-beautiful-dnd. Positions stored as floats — inserting between two items uses <code>(prev + next) / 2</code>, avoiding full re-indexing on every drag.</p>
+      </div>
+    </div>
+    <div class="stack-row">
+      <div class="stack-dot" style="background:#3fb950;"></div>
+      <div>
+        <h4>Tailwind CSS 3</h4>
+        <p>Utility-first styling. Dark header, coloured board backgrounds, white list columns with shadows, modal with backdrop blur, toast notifications for async feedback.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JWT Auth flow -->
+  <h3 class="subsection-h3">JWT Token Lifecycle</h3>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <h4>Register / Login</h4>
+      <p>Server returns <code>{ accessToken }</code> in the JSON body and sets a <code>refreshToken</code> httpOnly cookie. The React client stores the access token in memory (a module-level variable — never the DOM or localStorage).</p>
+    </div>
+    <div class="flow-step">
+      <h4>Authenticated requests</h4>
+      <p>Every API call goes through the Axios instance, which attaches <code>Authorization: Bearer &lt;accessToken&gt;</code> via a request interceptor.</p>
+    </div>
+    <div class="flow-step">
+      <h4>Token expiry (15 min)</h4>
+      <p>When the server returns <code>401</code>, the Axios response interceptor automatically calls <code>POST /api/auth/refresh</code>. The browser sends the httpOnly cookie automatically. The server issues a new access token.</p>
+    </div>
+    <div class="flow-step">
+      <h4>Refresh failure</h4>
+      <p>If the refresh token is expired or missing, the interceptor clears the access token from memory and redirects to <code>/login</code>.</p>
+    </div>
+    <div class="flow-step">
+      <h4>Logout</h4>
+      <p>Calls <code>POST /api/auth/logout</code>, which clears the httpOnly cookie server-side. The client clears its in-memory token. User is redirected to <code>/login</code>.</p>
+    </div>
+  </div>
+
+  <!-- Database schema -->
+  <h3 class="subsection-h3">Database Schema — 7 Models</h3>
+  <div class="schema-grid">
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#58a6ff;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#58a6ff" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#58a6ff"/></svg>
+        User
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">email</span><span class="field-type">unique</span></div>
+        <div class="schema-field"><span class="field-name">password</span><span class="field-type">bcrypt</span></div>
+        <div class="schema-field"><span class="field-name">name</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name field-opt">boards</span><span class="field-type">Board[]</span></div>
+      </div>
+    </div>
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#3fb950;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#3fb950" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#3fb950"/></svg>
+        Board
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">title</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name">color</span><span class="field-type">#0079bf</span></div>
+        <div class="schema-field"><span class="field-name field-fk">ownerId</span><span class="field-type">→ User</span></div>
+        <div class="schema-field"><span class="field-name field-opt">lists</span><span class="field-type">List[]</span></div>
+      </div>
+    </div>
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#ffa657;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#ffa657" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#ffa657"/></svg>
+        List
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">title</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name">position</span><span class="field-type">Float</span></div>
+        <div class="schema-field"><span class="field-name field-fk">boardId</span><span class="field-type">→ Board ⛓</span></div>
+        <div class="schema-field"><span class="field-name field-opt">cards</span><span class="field-type">Card[]</span></div>
+      </div>
+    </div>
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#d2a8ff;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#d2a8ff" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#d2a8ff"/></svg>
+        Card
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">title</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name field-opt">description</span><span class="field-type">String?</span></div>
+        <div class="schema-field"><span class="field-name">position</span><span class="field-type">Float</span></div>
+        <div class="schema-field"><span class="field-name field-opt">dueDate</span><span class="field-type">DateTime?</span></div>
+        <div class="schema-field"><span class="field-name field-fk">listId</span><span class="field-type">→ List ⛓</span></div>
+      </div>
+    </div>
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#f85149;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#f85149" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#f85149"/></svg>
+        Label
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">text</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name">color</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name field-fk">cardId</span><span class="field-type">→ Card ⛓</span></div>
+      </div>
+    </div>
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#58a6ff;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#58a6ff" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#58a6ff"/></svg>
+        Checklist
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">title</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name field-fk">cardId</span><span class="field-type">→ Card ⛓</span></div>
+        <div class="schema-field"><span class="field-name field-opt">items</span><span class="field-type">Item[]</span></div>
+      </div>
+    </div>
+
+    <div class="schema-table">
+      <div class="schema-header" style="color:#3fb950;">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="#3fb950" opacity=".3"/><circle cx="6" cy="6" r="3" fill="#3fb950"/></svg>
+        ChecklistItem
+      </div>
+      <div class="schema-fields">
+        <div class="schema-field"><span class="field-name field-pk">id</span><span class="field-type">cuid</span></div>
+        <div class="schema-field"><span class="field-name">text</span><span class="field-type">String</span></div>
+        <div class="schema-field"><span class="field-name">checked</span><span class="field-type">false</span></div>
+        <div class="schema-field"><span class="field-name field-fk">checklistId</span><span class="field-type">→ List ⛓</span></div>
+      </div>
+    </div>
+
+  </div>
+  <p style="font-size:11px;color:var(--muted);margin-top:10px;">⛓ = onDelete: Cascade &nbsp;·&nbsp; <span style="color:var(--accent4);">gold id</span> = primary key &nbsp;·&nbsp; <span style="color:var(--accent3);">purple</span> = foreign key &nbsp;·&nbsp; <span style="color:var(--accent2);">green</span> = optional / relation</p>
+
+  <!-- API endpoints -->
+  <h3 class="subsection-h3">REST API Endpoints</h3>
+
+  <div class="endpoint-group">
+    <h4>Auth — /api/auth</h4>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/register</span><span class="ep-desc">Create account</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/login</span><span class="ep-desc">Returns JWT + sets refresh cookie</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/refresh</span><span class="ep-desc">Re-issue access token from cookie</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/logout</span><span class="ep-desc">Clear refresh cookie</span></div>
+  </div>
+
+  <div class="endpoint-group">
+    <h4>Boards — /api/boards <span class="protected-tag">protected</span></h4>
+    <div class="endpoint"><span class="method get">GET</span><span class="ep-path">/</span><span class="ep-desc">List user's boards</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/</span><span class="ep-desc">Create board</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="ep-path">/:id</span><span class="ep-desc">Board + nested lists &amp; cards</span></div>
+    <div class="endpoint"><span class="method patch">PATCH</span><span class="ep-path">/:id</span><span class="ep-desc">Update title or colour</span></div>
+    <div class="endpoint"><span class="method delete">DELETE</span><span class="ep-path">/:id</span><span class="ep-desc">Delete board (cascades)</span></div>
+  </div>
+
+  <div class="endpoint-group">
+    <h4>Lists — /api/boards/:boardId/lists <span class="protected-tag">protected</span></h4>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/</span><span class="ep-desc">Add list to board</span></div>
+    <div class="endpoint"><span class="method patch">PATCH</span><span class="ep-path">/:id</span><span class="ep-desc">Rename list</span></div>
+    <div class="endpoint"><span class="method patch">PATCH</span><span class="ep-path">/:id/move</span><span class="ep-desc">Reorder (update float position)</span></div>
+    <div class="endpoint"><span class="method delete">DELETE</span><span class="ep-path">/:id</span><span class="ep-desc">Delete list + cards</span></div>
+  </div>
+
+  <div class="endpoint-group">
+    <h4>Cards — /api/lists/:listId/cards <span class="protected-tag">protected</span></h4>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/</span><span class="ep-desc">Add card to list</span></div>
+    <div class="endpoint"><span class="method patch">PATCH</span><span class="ep-path">/:id</span><span class="ep-desc">Update title / desc / dueDate / position</span></div>
+    <div class="endpoint"><span class="method delete">DELETE</span><span class="ep-path">/:id</span><span class="ep-desc">Delete card</span></div>
+  </div>
+
+  <div class="endpoint-group">
+    <h4>Card Details — /api/cards/:cardId <span class="protected-tag">protected</span></h4>
+    <div class="endpoint"><span class="method get">GET</span><span class="ep-path">/</span><span class="ep-desc">Full card with labels &amp; checklists</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/labels</span><span class="ep-desc">Add label</span></div>
+    <div class="endpoint"><span class="method delete">DELETE</span><span class="ep-path">/labels/:id</span><span class="ep-desc">Remove label</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/checklists</span><span class="ep-desc">Add checklist</span></div>
+    <div class="endpoint"><span class="method delete">DELETE</span><span class="ep-path">/checklists/:id</span><span class="ep-desc">Remove checklist</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="ep-path">/checklists/:id/items</span><span class="ep-desc">Add checklist item</span></div>
+    <div class="endpoint"><span class="method patch">PATCH</span><span class="ep-path">/checklists/:id/items/:itemId</span><span class="ep-desc">Toggle item checked</span></div>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 3 — TESTS
+══════════════════════════════════════════════════ -->
+<section id="tests">
+  <div class="section-label"><span></span>Section 3</div>
+  <h2>Tests</h2>
+  <p class="section-sub">Three independent test layers. Each runs in isolation and has its own toolchain. Tests must <strong>not</strong> run against the development database — a separate test DB is required.</p>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:32px;margin-top:-24px;">Test inventory — not executed. Items below describe what each file tests, not a recorded run result.</p>
+
+  <!-- E2E -->
+  <div class="test-suite">
+    <div class="test-suite-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="#ffa657" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="#ffa657" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h3>End-to-End Tests</h3>
+      <span class="test-file-tag">e2e/tests/</span>
+      <span class="test-badge badge-e2e">Playwright · TypeScript</span>
+    </div>
+    <div class="test-cases">
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>auth.spec.ts</strong> — Authentication flows
+          <span>Register with valid credentials → lands on boards dashboard · Duplicate email shows error toast · Login and logout · Logged-out user visiting /boards is redirected to /login</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>boards.spec.ts</strong> — Board management
+          <span>Create a board · Board appears in grid with correct title and colour · Delete board with confirmation dialog · Navigate into a board</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>lists-cards.spec.ts</strong> — Lists and cards
+          <span>Add a list · Rename a list inline · Add a card · Delete a list (cards disappear) · Drag a card to another list and verify position persists after page reload</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>card-detail.spec.ts</strong> — Card modal
+          <span>Open card modal · Edit title · Add description · Set due date · Add label · Add checklist with items · Check item → progress bar updates · Close with backdrop click</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Server -->
+  <div class="test-suite">
+    <div class="test-suite-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="#3fb950" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h3>Server Integration Tests</h3>
+      <span class="test-file-tag">server/src/__tests__/</span>
+      <span class="test-badge badge-server">Jest · Supertest</span>
+    </div>
+    <div class="test-cases">
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>auth.test.js</strong> — Auth endpoints
+          <span>Register: success, duplicate email, missing fields, short password · Login: success + token + cookie, wrong password, unknown email · Refresh: valid cookie issues new token, missing/expired cookie → 401 · Logout: clears cookie</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>boards.test.js</strong> — Board endpoints
+          <span>GET returns only the authed user's boards · POST creates board, validates required title · GET /:id returns nested lists + cards; 404 for unknown; 403 for another user's board · PATCH updates title and colour · DELETE cascades</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>lists.test.js</strong> — List endpoints
+          <span>Create list with auto-increment position · Rename · Reorder (PATCH move with float position values) · Delete cascade removes child cards</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>cards.test.js</strong> — Card endpoints
+          <span>CRUD with position auto-increment · Due date management · Move card to different list (PATCH with new listId) · Labels: add and remove · Checklists: create, delete, add item, toggle item checked, delete item</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>middleware.test.js</strong> — Auth middleware
+          <span>Rejects missing Authorization header · Rejects malformed token · Rejects expired token · Rejects token signed with wrong secret · Rejects invalid JWT string</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>setup.js</strong> — Test infrastructure
+          <span>Shared helpers: createTestUser, createTestBoard, createTestList, createTestCard. Database cleanup utilities that truncate all tables between test runs via Prisma.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Client -->
+  <div class="test-suite">
+    <div class="test-suite-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="3" stroke="#58a6ff" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h3>Client Unit &amp; Component Tests</h3>
+      <span class="test-file-tag">client/src/__tests__/</span>
+      <span class="test-badge badge-client">Vitest · React Testing Library</span>
+    </div>
+    <div class="test-cases">
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>AuthContext.test.jsx</strong> — Auth state
+          <span>Loading states during token refresh · Token refresh on mount · Login flow stores token in state · Logout clears user and calls API · Register flow triggers automatic login</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>BoardCard.test.jsx</strong> — Board card component
+          <span>Renders board title and custom colour · Falls back to default colour · Delete button renders · Delete triggers confirmation dialog · Confirmed delete calls onDelete prop</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>BoardView.test.jsx</strong> — Board page
+          <span>Loads and renders lists and cards from mock data · "Add another list" form appears on click · Submit creates a new list · "Add a card" form appears per list · Board background matches colour setting</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>CardModal.test.jsx</strong> — Card detail modal
+          <span>Opens with correct card data · Title editing on click, saves on blur or Enter · Label adding renders new colour pill · Checklist creation and item management · Item toggle updates progress bar · Close button works</span>
+        </div>
+      </div>
+
+      <div class="test-case">
+        <div class="test-check">–</div>
+        <div class="test-desc">
+          <strong>DueDateBadge.test.jsx</strong> — Due date badge
+          <span>Renders nothing when date is null · Red badge for overdue dates · Yellow badge for today · Grey badge for future dates · Displays formatted date string · Renders clock icon SVG</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid rgba(255,166,87,.3);border-radius:8px;padding:16px 20px;display:flex;gap:12px;align-items:flex-start;margin-top:8px;">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:2px;"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM8 5v4M8 11v.5" stroke="#ffa657" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div style="font-size:13px;">
+      <strong style="color:var(--accent4);">Test database required</strong>
+      <p style="color:var(--muted);margin-top:4px;">The server and E2E test suites truncate all tables between runs. Never point them at the development database. Create a separate PostgreSQL database and set its connection string in <code>server/.env.test</code> before running any tests.</p>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  Trello Clone · Portfolio Project · React + Express + PostgreSQL + Prisma
+</footer>
+
+<script>
+  // Active nav tab on scroll
+  const tabs = document.querySelectorAll('nav a.tab');
+  const sections = document.querySelectorAll('section[id]');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tabs.forEach(t => t.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

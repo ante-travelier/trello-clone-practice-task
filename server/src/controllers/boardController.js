@@ -16,9 +16,32 @@ export async function getBoards(req, res, next) {
     const boards = await prisma.board.findMany({
       where: { ownerId: req.userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        _count: { select: { lists: true } },
+        lists: {
+          select: {
+            cards: { select: { dueDate: true } },
+          },
+        },
+      },
     });
 
-    res.json({ data: boards });
+    // All date comparisons are UTC (server clock).
+    const now = new Date();
+    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+
+    const data = boards.map(({ _count, lists, ...board }) => {
+      const allCards = lists.flatMap((l) => l.cards);
+      return {
+        ...board,
+        listCount:    _count.lists,
+        cardCount:    allCards.length,
+        overdueCount: allCards.filter((c) => c.dueDate && c.dueDate < now).length,
+        dueSoonCount: allCards.filter((c) => c.dueDate && c.dueDate >= now && c.dueDate <= fiveDaysFromNow).length,
+      };
+    });
+
+    res.json({ data });
   } catch (error) {
     next(error);
   }

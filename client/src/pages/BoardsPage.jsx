@@ -73,10 +73,44 @@ export default function BoardsPage() {
                 <div
                   key={board.id}
                   onClick={() => navigate(`/boards/${board.id}`)}
-                  className="relative group rounded-lg h-28 p-4 cursor-pointer shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                  className="relative group rounded-lg min-h-28 p-4 pb-3 cursor-pointer shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex flex-col justify-between"
                   style={{ backgroundColor: board.color || '#0079bf' }}
                 >
-                  <h3 className="text-white font-bold text-base truncate pr-6">{board.title}</h3>
+                  <div>
+                    <h3 className="text-white font-bold text-base truncate pr-6">{board.title}</h3>
+                  </div>
+
+                  {/* Stats row */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3">
+                    <span className="text-white/70 text-xs flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h10" />
+                      </svg>
+                      {board.listCount ?? 0} {board.listCount === 1 ? 'list' : 'lists'}
+                    </span>
+                    <span className="text-white/70 text-xs flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      {board.cardCount ?? 0} {board.cardCount === 1 ? 'card' : 'cards'}
+                    </span>
+                    {board.overdueCount > 0 && (
+                      <span className="text-xs flex items-center gap-1 bg-red-500/40 text-white px-1.5 py-0.5 rounded">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {board.overdueCount} overdue
+                      </span>
+                    )}
+                    {board.dueSoonCount > 0 && (
+                      <span className="text-xs flex items-center gap-1 bg-yellow-500/40 text-white px-1.5 py-0.5 rounded">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {board.dueSoonCount} due soon
+                      </span>
+                    )}
+                  </div>
 
                   <button
                     onClick={(e) => handleDeleteBoard(e, board.id, board.title)}
