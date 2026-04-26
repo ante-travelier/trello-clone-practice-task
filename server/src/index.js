@@ -7,6 +7,7 @@ import boardRoutes from './routes/boards.js';
 import listRoutes from './routes/lists.js';
 import cardRoutes from './routes/cards.js';
 import cardDetailRoutes from './routes/cardDetails.js';
+import commentRoutes from './routes/comments.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/boards', boardRoutes);
 app.use('/api/boards/:boardId/lists', listRoutes);
 app.use('/api/lists/:listId/cards', cardRoutes);
 app.use('/api/cards/:cardId', cardDetailRoutes);
+app.use('/api/cards/:cardId/comments', commentRoutes);
 
 app.use(errorHandler);
 

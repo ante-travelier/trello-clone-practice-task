@@ -2,7 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import * as cardDetailsApi from '../api/cardDetails.js';
 import * as cardsApi from '../api/cards.js';
+import * as commentsApi from '../api/comments.js';
 import DueDateBadge from './DueDateBadge.jsx';
+
+function timeAgo(date) {
+  const secs = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (secs < 60) return 'just now';
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+  return `${Math.floor(secs / 86400)}d ago`;
+}
 
 const LABEL_COLORS = ['#10b981', '#f59e0b', '#f97316', '#ef4444', '#a855f7', '#22d3ee'];
 
@@ -19,6 +28,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
   const [newChecklistTitle, setNewChecklistTitle] = useState('');
   const [showChecklistForm, setShowChecklistForm] = useState(false);
   const [newItemTexts, setNewItemTexts] = useState({});
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const modalRef = useRef(null);
   const titleInputRef = useRef(null);
 
@@ -34,7 +46,31 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
 
   useEffect(() => {
     refreshCard();
+    fetchComments();
   }, []);
+
+  async function fetchComments() {
+    try {
+      const data = await commentsApi.getComments(initialCard.id);
+      setComments(data);
+    } catch {
+      // keep empty
+    }
+  }
+
+  async function handleAddComment() {
+    if (!commentText.trim()) return;
+    setSubmitting(true);
+    try {
+      const comment = await commentsApi.createComment(initialCard.id, { text: commentText.trim() });
+      setComments((prev) => [comment, ...prev]);
+      setCommentText('');
+    } catch {
+      toast.error('Failed to add comment');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     if (editingTitle && titleInputRef.current) {
@@ -492,6 +528,55 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
               + Add Checklist
             </button>
           )}
+        </div>
+
+        {/* Comments */}
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">
+            Comments
+            {comments.length > 0 && (
+              <span className="ml-2 font-mono text-zinc-600">{comments.length}</span>
+            )}
+          </h3>
+
+          {/* Existing comments — newest first */}
+          {comments.length > 0 ? (
+            <div className="space-y-3 mb-4">
+              {comments.map((comment) => (
+                <div key={comment.id} className="surface-3 border border-subtle rounded-lg px-3 py-2.5">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-xs font-semibold text-zinc-300">{comment.user.name}</span>
+                    <span className="text-[11px] text-zinc-600 font-mono">{timeAgo(comment.createdAt)}</span>
+                  </div>
+                  <p className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed">{comment.text}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-zinc-600 mb-4">No comments yet. Be the first.</p>
+          )}
+
+          {/* Add comment */}
+          <div>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleAddComment();
+              }}
+              placeholder="Write a comment..."
+              rows={3}
+              maxLength={2000}
+              className="input-dark w-full rounded-lg px-3 py-2 text-sm resize-none mb-2"
+            />
+            <button
+              onClick={handleAddComment}
+              disabled={submitting || !commentText.trim()}
+              className="btn-gradient px-4 py-1.5 rounded-md text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {submitting ? 'Saving...' : 'Add comment'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
