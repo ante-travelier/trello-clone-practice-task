@@ -12,7 +12,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
-  outputDir: './screenshots',
+  outputDir: './test-results',
   webServer: [
     {
       // Inherits DATABASE_URL / NODE_ENV from the parent process (verify.mjs).
