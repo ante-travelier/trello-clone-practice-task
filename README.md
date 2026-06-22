@@ -176,6 +176,26 @@ npm run dev
 
 The client will be available at `http://localhost:5173` and the API at `http://localhost:4000`.
 
+### Verify (agents & CI)
+
+After setup, run the full verification pipeline from the repo root:
+
+```bash
+npm run setup   # installs all workspace dependencies
+npm run verify  # lint → format:check → migrate → server tests (+coverage) → client tests (+coverage) → client build → e2e
+```
+
+`npm run verify` spins up an ephemeral Postgres on port 55433 (via `docker-compose.yml`), runs
+every check against it, and tears it down on exit. All destructive test operations are code-enforced
+to stay on that ephemeral DB — see `server/src/lib/assertTestDatabase.js`.
+
+A devcontainer / devbox is also available for fully isolated runs:
+
+```bash
+docker build -t trello-clone-devbox .  # build the devbox image
+# or open in VS Code → "Reopen in Container" (.devcontainer/)
+```
+
 ## Available Scripts
 
 ### Server (`cd server`)

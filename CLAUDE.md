@@ -6,16 +6,17 @@ A full-stack Trello clone (portfolio project). React + Vite frontend, Node.js/Ex
 
 ## Key commands
 
-| Task               | Command                                |
-| ------------------ | -------------------------------------- |
-| Start API server   | `cd server && npm run dev`             |
-| Start React client | `cd client && npm run dev`             |
-| Run DB migrations  | `cd server && npx prisma migrate dev`  |
-| Open Prisma Studio | `cd server && npx prisma studio`       |
-| Run server tests   | `cd server && npm test`                |
-| Run client tests   | `cd client && npm test`                |
-| Run E2E tests      | `cd e2e && npx playwright test`        |
-| View E2E report    | `cd e2e && npx playwright show-report` |
+| Task                                      | Command                                |
+| ----------------------------------------- | -------------------------------------- |
+| Start API server                          | `cd server && npm run dev`             |
+| Start React client                        | `cd client && npm run dev`             |
+| Run DB migrations                         | `cd server && npx prisma migrate dev`  |
+| Open Prisma Studio                        | `cd server && npx prisma studio`       |
+| Run server tests                          | `cd server && npm test`                |
+| Run client tests                          | `cd client && npm test`                |
+| Run E2E tests                             | `cd e2e && npx playwright test`        |
+| View E2E report                           | `cd e2e && npx playwright show-report` |
+| Verify everything (lint+format+all tests) | `npm run verify` (repo root)           |
 
 ## Project structure
 
@@ -29,9 +30,13 @@ See README.md for the full directory layout.
 - API responses: `{ data: ... }` for success, `{ error: "..." }` for errors
 - All protected routes require `Authorization: Bearer <token>` header
 
-## CRITICAL: Test database safety
+## Test database safety (enforced in code)
 
-**NEVER run server or E2E tests against the development database.** The test suite truncates ALL tables (users, boards, cards, etc.) between runs, which will destroy all existing data. Before running any tests, ensure a separate test database is configured in `server/.env.test`. If `.env.test` does not exist or does not contain a different `DATABASE_URL`, **do not run the tests** — warn the user and help them set up the test database first.
+Destructive test setup is guarded by `server/src/lib/assertTestDatabase.js`: tests
+refuse to run unless `NODE_ENV=test` AND the database name contains `test`. The
+hermetic path is `npm run verify` (repo root), which runs everything against an
+ephemeral Postgres (`docker-compose.yml`, port 55433) and tears it down after.
+Never point tests at the dev database manually.
 
 ## Environment setup
 
