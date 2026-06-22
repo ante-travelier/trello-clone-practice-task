@@ -15,13 +15,17 @@ export default defineConfig({
   outputDir: './screenshots',
   webServer: [
     {
+      // Inherits DATABASE_URL / NODE_ENV from the parent process (verify.mjs).
+      // dotenv in the server does not override already-set env vars.
       command: 'cd ../server && npm run dev',
       port: 4000,
+      timeout: 120_000,
       reuseExistingServer: !process.env.CI,
     },
     {
       command: 'cd ../client && npm run dev',
       port: 5173,
+      timeout: 120_000,
       reuseExistingServer: !process.env.CI,
     },
   ],

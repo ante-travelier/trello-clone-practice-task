@@ -36,7 +36,7 @@ try {
   run('npm run test:server', testEnv);
   run('npm run test:client');
   run('npm run build:client');
-  run('npm --prefix e2e exec -- playwright install chromium');
+  run('npm --prefix e2e exec -- playwright install --with-deps chromium');
   // Free the e2e server ports before Playwright starts its own (CI=true disallows reuse).
   try { execSync('lsof -ti :4000 | xargs kill -9', { stdio: 'ignore' }); } catch { /* nothing on port */ }
   try { execSync('lsof -ti :5173 | xargs kill -9', { stdio: 'ignore' }); } catch { /* nothing on port */ }
