@@ -2,6 +2,10 @@
  * Hard guard against running destructive test logic (table truncation) against
  * a non-test database. Throws unless NODE_ENV==="test" AND the database name
  * contains "test".
+ *
+ * [DETERMINISTIC] Pure function of its `env` argument: no clock, no randomness,
+ * no I/O — the same input always yields the same verdict. That is exactly why it
+ * is safe as a hard safety gate.
  * @param {NodeJS.ProcessEnv} env
  * @returns {{ dbName: string }}
  */

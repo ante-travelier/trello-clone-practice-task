@@ -1,3 +1,6 @@
+// [DETERMINISTIC] Coverage thresholds are a fixed numeric gate: a given test run
+// produces the same coverage numbers, so the pass/fail is repeatable across runs
+// and machines. Set just under measured baselines — a ratchet that can rise, not fall.
 export default {
   testEnvironment: 'node',
   transform: {},

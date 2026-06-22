@@ -1,4 +1,10 @@
 // scripts/verify.mjs
+//
+// The verify gate is a wall of DETERMINISTIC checks (same inputs -> same verdict,
+// every run, on every machine) that bounds the one NONDETERMINISTIC surface inside
+// it (browser e2e) and, ultimately, the truly nondeterministic thing it exists to
+// contain: an agent's generated code. That determinism is what makes an agent's
+// work trustable enough to merge without a human reading every line.
 import { execSync } from 'node:child_process';
 
 const TEST_DATABASE_URL =
@@ -31,14 +37,19 @@ const e2eEnv = {
 };
 
 try {
+  // [DETERMINISTIC] static analysis + unit/integration: pure functions of the
+  // source + a fresh, identical DB state, so the verdict is repeatable.
   run('npm run lint');
   run('npm run format:check');
-  if (!isCI) run('npm run db:up');
+  if (!isCI) run('npm run db:up'); // fresh ephemeral DB = deterministic starting state
   run('npm run migrate:test', dbEnv);
   run('npm run test:server', testEnv);
   run('npm run test:client');
   run('npm run build:client');
   run('npm --prefix e2e exec -- playwright install --with-deps chromium');
+  // [NONDETERMINISTIC] browser e2e: real servers, real timing, the network — the
+  // one flaky-prone surface in the gate. Pulled back toward determinism by a fresh
+  // DB, serial execution (workers:1) and CI retries (see e2e/playwright.config.ts).
   // Free the e2e server ports before Playwright starts its own (CI=true disallows reuse).
   try {
     execSync('lsof -ti :4000 | xargs kill -9', { stdio: 'ignore' });
