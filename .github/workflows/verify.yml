@@ -1,0 +1,42 @@
+# .github/workflows/verify.yml
+name: verify
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: trello_clone_test
+        ports:
+          - 55433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d trello_clone_test"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    env:
+      CI: 'true'
+      DATABASE_URL: postgresql://postgres:postgres@localhost:55433/trello_clone_test
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm run setup
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run migrate:test
+      - run: npm run test:server
+      - run: npm run test:client
+      - run: npm run build:client
+      - run: npm --prefix e2e exec -- playwright install --with-deps chromium
+      - name: e2e
+        run: npm run test:e2e
+        env:
+          NODE_ENV: e2e
