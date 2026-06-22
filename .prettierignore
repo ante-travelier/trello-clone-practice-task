@@ -3,4 +3,5 @@
 **/package-lock.json
 **/playwright-report
 **/screenshots
+**/coverage
 server/src/prisma/migrations
