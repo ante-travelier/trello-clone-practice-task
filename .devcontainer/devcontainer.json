@@ -1,0 +1,9 @@
+{
+  "name": "trello-clone-devbox",
+  "build": { "dockerfile": "../Dockerfile", "context": ".." },
+  "forwardPorts": [4000, 5173, 55433],
+  "postCreateCommand": "npm run setup",
+  "remoteEnv": {
+    "TEST_DATABASE_URL": "postgresql://postgres:postgres@localhost:55433/trello_clone_test"
+  }
+}
