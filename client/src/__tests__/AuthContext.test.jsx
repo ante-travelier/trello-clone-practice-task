@@ -1,6 +1,6 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthProvider, AuthContext } from '../context/AuthContext.jsx';
+import { AuthProvider } from '../context/AuthContext.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import * as authApi from '../api/auth.js';
 import { setAccessToken } from '../api/axios.js';

@@ -31,6 +31,7 @@ const e2eEnv = {
 };
 
 try {
+  run('npm run lint');
   if (!isCI) run('npm run db:up');
   run('npm run migrate:test', dbEnv);
   run('npm run test:server', testEnv);

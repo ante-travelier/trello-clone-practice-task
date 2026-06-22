@@ -111,8 +111,8 @@ describe('PATCH /api/boards/:boardId/lists/:id/move', () => {
     const { token } = await createTestUser();
     const board = await createTestBoard(token);
 
-    const list1 = await createTestList(token, board.id, 'First');
-    const list2 = await createTestList(token, board.id, 'Second');
+    await createTestList(token, board.id, 'First');
+    await createTestList(token, board.id, 'Second');
     const list3 = await createTestList(token, board.id, 'Third');
 
     // Move list3 between list1 and list2

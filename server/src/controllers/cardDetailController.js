@@ -14,10 +14,6 @@ const createItemSchema = z.object({
   text: z.string().min(1, 'Text is required'),
 });
 
-const updateItemSchema = z.object({
-  checked: z.boolean(),
-});
-
 export async function getCard(req, res, next) {
   try {
     const card = await prisma.card.findUnique({
