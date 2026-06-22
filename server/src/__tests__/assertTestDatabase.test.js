@@ -18,6 +18,11 @@ describe('assertTestDatabase', () => {
       .toThrow(/Refusing to run destructive tests/);
   });
 
+  test('throws when DATABASE_URL is not a valid URL', () => {
+    expect(() => assertTestDatabase({ NODE_ENV: 'test', DATABASE_URL: 'not-a-url' }))
+      .toThrow(/DATABASE_URL is not a valid URL/);
+  });
+
   test('returns the db name for a proper test database', () => {
     expect(assertTestDatabase({ NODE_ENV: 'test', DATABASE_URL: TEST_URL }))
       .toEqual({ dbName: 'trello_clone_test' });
