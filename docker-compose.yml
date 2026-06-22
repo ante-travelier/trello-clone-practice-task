@@ -1,0 +1,20 @@
+# docker-compose.yml
+# [DETERMINISTIC] A throwaway Postgres on tmpfs, recreated empty every run, so the
+# database is an identical clean slate each time — a deterministic starting state
+# for the tests rather than whatever data happened to accumulate locally.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: trello_clone_test
+    ports:
+      - '55433:5432'
+    tmpfs:
+      - /var/lib/postgresql/data # ephemeral: data lives in RAM, dropped on teardown
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d trello_clone_test']
+      interval: 2s
+      timeout: 3s
+      retries: 20

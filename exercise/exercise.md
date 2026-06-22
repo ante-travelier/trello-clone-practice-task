@@ -25,6 +25,7 @@ Ask Claude to start the project and give you the URL for the application.
 Ask Claude:
 
 > Create a new file `app-overview.html` which is self-contained and explains the app from 3 different perspectives:
+>
 > - **Product** — explaining the features
 > - **Architecture and tech** — explaining the stack, database, internal communications
 > - **Tests** — explaining any available tests
@@ -36,6 +37,7 @@ Ask Claude:
 Ask Claude:
 
 > Enter plan mode. On the main screen (list of boards), add stats for each board card. The stats should include:
+>
 > - Number of lists
 > - Total tasks
 > - Number of tasks past due date
@@ -62,6 +64,7 @@ curl -sL https://raw.githubusercontent.com/anthropics/claude-code/main/plugins/f
 Now ask Claude:
 
 > Use /frontend-design to redesign the entire application with a dark, high-tech aesthetic. The design should follow these principles:
+>
 > - **Backgrounds**: Near-black base with layered dark surfaces for cards and panels
 > - **Borders**: Subtle, thin borders on cards and containers to create depth
 > - **Accent colors**: Indigo-to-cyan gradients for highlighted text and active elements. Use vivid colors (green, yellow, red, purple, orange, cyan) for badges, labels, and status indicators
@@ -77,6 +80,7 @@ Now ask Claude:
 Ask Claude:
 
 > Enter plan mode. I want users to be able to leave comments on cards. Here are the requirements:
+>
 > - Add a `Comment` model to the Prisma schema with fields: id, text, createdAt, cardId, userId
 > - Create API routes for posting and retrieving comments (`POST` and `GET` on `/api/cards/:cardId/comments`)
 > - In the card modal, display existing comments showing the commenter's name and a relative timestamp (e.g. "2 hours ago")
@@ -92,6 +96,7 @@ Review the plan Claude produces — check that it covers the migration, API rout
 Ask Claude:
 
 > Add a light/dark mode toggle to the app. The toggle should:
+>
 > - Add a toggle button in the Header component
 > - Persist the user's preference in localStorage
 > - Update all existing styles to support both themes using CSS custom properties

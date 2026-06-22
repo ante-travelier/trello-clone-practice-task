@@ -34,7 +34,11 @@ function RootRedirect() {
     );
   }
 
-  return user ? <Navigate to="/boards" replace /> : <Navigate to="/login" replace />;
+  return user ? (
+    <Navigate to="/boards" replace />
+  ) : (
+    <Navigate to="/login" replace />
+  );
 }
 
 export default function App() {

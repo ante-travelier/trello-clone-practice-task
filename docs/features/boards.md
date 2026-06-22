@@ -6,12 +6,12 @@ Boards are the top-level organizational unit in the Trello Clone. Each board bel
 
 ## Board CRUD
 
-| Operation | UI Action | API Call |
-|---|---|---|
-| **Create** | Click "Create new board" tile, enter title, pick color, submit | `POST /api/boards` |
-| **Read** | Visit `/boards` (dashboard) or `/boards/:id` (detail) | `GET /api/boards` or `GET /api/boards/:id` |
-| **Update** | (Board settings - title/color update) | `PATCH /api/boards/:id` |
-| **Delete** | Hover on board tile, click trash icon, confirm dialog | `DELETE /api/boards/:id` |
+| Operation  | UI Action                                                      | API Call                                   |
+| ---------- | -------------------------------------------------------------- | ------------------------------------------ |
+| **Create** | Click "Create new board" tile, enter title, pick color, submit | `POST /api/boards`                         |
+| **Read**   | Visit `/boards` (dashboard) or `/boards/:id` (detail)          | `GET /api/boards` or `GET /api/boards/:id` |
+| **Update** | (Board settings - title/color update)                          | `PATCH /api/boards/:id`                    |
+| **Delete** | Hover on board tile, click trash icon, confirm dialog          | `DELETE /api/boards/:id`                   |
 
 Deleting a board cascades through Prisma's `onDelete: Cascade` relation, removing all associated lists, cards, labels, checklists, and checklist items.
 
@@ -19,14 +19,14 @@ Deleting a board cascades through Prisma's `onDelete: Cascade` relation, removin
 
 The board creation form offers six preset background colors:
 
-| Color | Hex Code |
-|---|---|
+| Color          | Hex Code  |
+| -------------- | --------- |
 | Blue (default) | `#0079bf` |
-| Orange | `#d29034` |
-| Green | `#519839` |
-| Red | `#b04632` |
-| Purple | `#89609e` |
-| Pink | `#cd5a91` |
+| Orange         | `#d29034` |
+| Green          | `#519839` |
+| Red            | `#b04632` |
+| Purple         | `#89609e` |
+| Pink           | `#cd5a91` |
 
 The selected color is stored in the `Board.color` field and applied as the `backgroundColor` CSS property on both the board tile and the board view page.
 
@@ -51,12 +51,12 @@ Lists are created from the board view by clicking "Add another list" and enterin
 
 ### List Operations
 
-| Operation | UI Action | API Call |
-|---|---|---|
-| **Create** | Click "Add another list", type title, click "Add list" | `POST /api/boards/:boardId/lists` |
-| **Rename** | Click list title, edit inline, press Enter or blur | `PATCH /api/boards/:boardId/lists/:id` |
-| **Reorder** | Drag list to new position | `PATCH /api/boards/:boardId/lists/:id/move` |
-| **Delete** | Click trash icon on list header, confirm dialog | `DELETE /api/boards/:boardId/lists/:id` |
+| Operation   | UI Action                                              | API Call                                    |
+| ----------- | ------------------------------------------------------ | ------------------------------------------- |
+| **Create**  | Click "Add another list", type title, click "Add list" | `POST /api/boards/:boardId/lists`           |
+| **Rename**  | Click list title, edit inline, press Enter or blur     | `PATCH /api/boards/:boardId/lists/:id`      |
+| **Reorder** | Drag list to new position                              | `PATCH /api/boards/:boardId/lists/:id/move` |
+| **Delete**  | Click trash icon on list header, confirm dialog        | `DELETE /api/boards/:boardId/lists/:id`     |
 
 Deleting a list cascades to remove all of its cards (and their labels, checklists, and items).
 
@@ -69,6 +69,7 @@ Deleting a list cascades to remove all of its cards (and their labels, checklist
 List all boards for the authenticated user.
 
 **Response** (`200`):
+
 ```json
 {
   "data": [
@@ -87,6 +88,7 @@ List all boards for the authenticated user.
 Create a new board.
 
 **Request body:**
+
 ```json
 {
   "title": "Sprint Board",
@@ -95,6 +97,7 @@ Create a new board.
 ```
 
 **Response** (`201`):
+
 ```json
 {
   "data": {
@@ -112,6 +115,7 @@ Create a new board.
 Get a board with its lists and cards.
 
 **Response** (`200`):
+
 ```json
 {
   "data": {
@@ -135,6 +139,7 @@ Get a board with its lists and cards.
 Update board title or color.
 
 **Request body:**
+
 ```json
 {
   "title": "Updated Title"
@@ -146,6 +151,7 @@ Update board title or color.
 Delete a board and all associated data.
 
 **Response** (`200`):
+
 ```json
 {
   "data": { "message": "Board deleted" }
@@ -159,6 +165,7 @@ Delete a board and all associated data.
 Create a new list in a board.
 
 **Request body:**
+
 ```json
 {
   "title": "In Progress"
@@ -170,6 +177,7 @@ Create a new list in a board.
 Update list title.
 
 **Request body:**
+
 ```json
 {
   "title": "Done"
@@ -181,6 +189,7 @@ Update list title.
 Update list position (used during drag-and-drop).
 
 **Request body:**
+
 ```json
 {
   "position": 98304

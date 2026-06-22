@@ -8,16 +8,16 @@ Build a full-stack Trello clone as a portfolio/learning project. The app lets us
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 (Vite) |
-| Styling | Tailwind CSS v3 |
-| Drag & Drop | @hello-pangea/dnd |
-| Backend | Node.js + Express |
-| Database | PostgreSQL |
-| ORM | Prisma |
-| Auth | JWT (access token in memory, refresh token in httpOnly cookie) |
-| API style | REST |
+| Layer       | Technology                                                     |
+| ----------- | -------------------------------------------------------------- |
+| Frontend    | React 18 (Vite)                                                |
+| Styling     | Tailwind CSS v3                                                |
+| Drag & Drop | @hello-pangea/dnd                                              |
+| Backend     | Node.js + Express                                              |
+| Database    | PostgreSQL                                                     |
+| ORM         | Prisma                                                         |
+| Auth        | JWT (access token in memory, refresh token in httpOnly cookie) |
+| API style   | REST                                                           |
 
 ---
 
@@ -144,47 +144,52 @@ model ChecklistItem {
 ## REST API Endpoints
 
 ### Auth — `/api/auth`
-| Method | Path | Description |
-|---|---|---|
-| POST | `/register` | Create account (name, email, password) |
-| POST | `/login` | Returns access JWT + sets refresh cookie |
-| POST | `/refresh` | Issue new access token from refresh cookie |
-| POST | `/logout` | Clear refresh cookie |
 
-### Boards — `/api/boards` *(protected)*
-| Method | Path | Description |
-|---|---|---|
-| GET | `/` | List all boards for the logged-in user |
-| POST | `/` | Create a board |
-| GET | `/:id` | Get a board with all its lists and cards |
-| PATCH | `/:id` | Update board title or colour |
-| DELETE | `/:id` | Delete a board |
+| Method | Path        | Description                                |
+| ------ | ----------- | ------------------------------------------ |
+| POST   | `/register` | Create account (name, email, password)     |
+| POST   | `/login`    | Returns access JWT + sets refresh cookie   |
+| POST   | `/refresh`  | Issue new access token from refresh cookie |
+| POST   | `/logout`   | Clear refresh cookie                       |
 
-### Lists — `/api/boards/:boardId/lists` *(protected)*
-| Method | Path | Description |
-|---|---|---|
-| POST | `/` | Add a list to a board |
-| PATCH | `/:id` | Rename a list |
-| PATCH | `/:id/move` | Reorder (update position) |
-| DELETE | `/:id` | Delete a list and its cards |
+### Boards — `/api/boards` _(protected)_
 
-### Cards — `/api/lists/:listId/cards` *(protected)*
-| Method | Path | Description |
-|---|---|---|
-| POST | `/` | Add a card to a list |
-| PATCH | `/:id` | Update title, description, dueDate, listId, position |
-| DELETE | `/:id` | Delete a card |
+| Method | Path   | Description                              |
+| ------ | ------ | ---------------------------------------- |
+| GET    | `/`    | List all boards for the logged-in user   |
+| POST   | `/`    | Create a board                           |
+| GET    | `/:id` | Get a board with all its lists and cards |
+| PATCH  | `/:id` | Update board title or colour             |
+| DELETE | `/:id` | Delete a board                           |
 
-### Card details — `/api/cards/:cardId` *(protected)*
-| Method | Path | Description |
-|---|---|---|
-| GET | `/` | Get full card detail (labels, checklists) |
-| POST | `/labels` | Add a label |
-| DELETE | `/labels/:labelId` | Remove a label |
-| POST | `/checklists` | Add a checklist |
-| DELETE | `/checklists/:checklistId` | Remove a checklist |
-| PATCH | `/checklists/:checklistId/items/:itemId` | Toggle checklist item |
-| POST | `/checklists/:checklistId/items` | Add checklist item |
+### Lists — `/api/boards/:boardId/lists` _(protected)_
+
+| Method | Path        | Description                 |
+| ------ | ----------- | --------------------------- |
+| POST   | `/`         | Add a list to a board       |
+| PATCH  | `/:id`      | Rename a list               |
+| PATCH  | `/:id/move` | Reorder (update position)   |
+| DELETE | `/:id`      | Delete a list and its cards |
+
+### Cards — `/api/lists/:listId/cards` _(protected)_
+
+| Method | Path   | Description                                          |
+| ------ | ------ | ---------------------------------------------------- |
+| POST   | `/`    | Add a card to a list                                 |
+| PATCH  | `/:id` | Update title, description, dueDate, listId, position |
+| DELETE | `/:id` | Delete a card                                        |
+
+### Card details — `/api/cards/:cardId` _(protected)_
+
+| Method | Path                                     | Description                               |
+| ------ | ---------------------------------------- | ----------------------------------------- |
+| GET    | `/`                                      | Get full card detail (labels, checklists) |
+| POST   | `/labels`                                | Add a label                               |
+| DELETE | `/labels/:labelId`                       | Remove a label                            |
+| POST   | `/checklists`                            | Add a checklist                           |
+| DELETE | `/checklists/:checklistId`               | Remove a checklist                        |
+| PATCH  | `/checklists/:checklistId/items/:itemId` | Toggle checklist item                     |
+| POST   | `/checklists/:checklistId/items`         | Add checklist item                        |
 
 ---
 
@@ -203,6 +208,7 @@ model ChecklistItem {
 ## Feature Requirements
 
 ### Authentication
+
 - Register with name, email, password (bcrypt hashed, min 8 chars)
 - Login returns a short-lived JWT access token (15 min) stored in React state/memory
 - Refresh token stored in httpOnly cookie (7 days), used to silently re-issue access tokens
@@ -211,12 +217,14 @@ model ChecklistItem {
 - AuthContext wraps the app and exposes `user`, `login()`, `logout()`, `isLoading`
 
 ### Boards Dashboard (`/boards`)
+
 - Show all boards belonging to the logged-in user as a grid of coloured cards
 - "Create board" button opens a small inline form (title + colour picker with ~6 preset colours)
 - Click a board card to navigate to `/boards/:id`
 - Each board card shows a delete button (with confirmation)
 
 ### Board View (`/boards/:id`)
+
 - Horizontal scrollable row of lists
 - Each list has a title and a vertical stack of cards
 - **"Add list"** button at the end of the row — click to reveal inline input
@@ -229,6 +237,7 @@ model ChecklistItem {
 - Delete list button (with a confirmation popover)
 
 ### Card Detail Modal
+
 - Clicking a card opens a modal overlay (do not navigate away)
 - Editable fields:
   - **Title** — click to edit inline
@@ -240,6 +249,7 @@ model ChecklistItem {
 - Close modal with the × button or clicking the backdrop
 
 ### UI & Styling (Tailwind CSS)
+
 - Dark header bar with the app logo/name and user avatar + dropdown (logout)
 - Board view: coloured/gradient background matching the board's colour setting
 - Lists: white/light-grey cards with rounded corners and subtle shadow
@@ -279,6 +289,7 @@ Use `@hello-pangea/dnd` (a maintained fork of react-beautiful-dnd).
 ## Environment Variables
 
 Create a `.env` file in `server/`:
+
 ```
 DATABASE_URL="postgresql://user:password@localhost:5432/trelloclone"
 JWT_SECRET="your-secret-here"
@@ -288,6 +299,7 @@ CLIENT_URL="http://localhost:5173"
 ```
 
 Client `.env` in `client/`:
+
 ```
 VITE_API_URL=http://localhost:4000/api
 ```
@@ -315,12 +327,14 @@ Write tests in `server/src/__tests__/`. Use a separate test PostgreSQL database 
 **Required test files and coverage:**
 
 `auth.test.js`
+
 - POST `/api/auth/register` — success, duplicate email, missing fields, short password
 - POST `/api/auth/login` — success (returns token + sets cookie), wrong password, unknown email
 - POST `/api/auth/refresh` — valid cookie issues new token, missing/expired cookie returns 401
 - POST `/api/auth/logout` — clears cookie
 
 `boards.test.js`
+
 - GET `/api/boards` — returns only the authed user's boards
 - POST `/api/boards` — creates board, validates title required
 - GET `/api/boards/:id` — returns full board with nested lists+cards; 404 for unknown id; 403 for another user's board
@@ -328,16 +342,19 @@ Write tests in `server/src/__tests__/`. Use a separate test PostgreSQL database 
 - DELETE `/api/boards/:id` — deletes board and cascades
 
 `lists.test.js`
+
 - POST, PATCH (rename), PATCH (move/reorder), DELETE
 - Verify cascade delete removes child cards
 
 `cards.test.js`
+
 - CRUD on cards
 - Moving a card to a different list (PATCH with new `listId`)
 - Labels: add, remove
 - Checklists: create, delete, add item, toggle item, delete item
 
 `middleware.test.js`
+
 - `authenticate` middleware rejects missing token, expired token, malformed token
 
 **Run command**: `cd server && npm test`
@@ -353,26 +370,31 @@ Write tests in `client/src/__tests__/`. Mock API calls with `vi.mock('../api/...
 **Required test files and coverage:**
 
 `AuthContext.test.jsx`
+
 - `login()` stores token in state and sets `user`
 - `logout()` clears user and calls the logout API
 - Unauthenticated state redirects protected routes
 
 `BoardCard.test.jsx`
+
 - Renders board title and colour
 - Delete button calls `onDelete` prop
 
 `CardModal.test.jsx`
+
 - Opens with correct card data
 - Editing title triggers save on blur/Enter
 - Adding a label renders a new pill
 - Checking a checklist item updates progress bar
 
 `BoardView.test.jsx`
+
 - Renders lists and cards from mock data
 - Inline "Add list" form appears on button click and submits correctly
 - Inline "Add card" form appears on button click
 
 `DueDateBadge.test.jsx`
+
 - Red badge when overdue
 - Yellow badge when due today
 - Grey badge for future dates
@@ -386,6 +408,7 @@ Write tests in `client/src/__tests__/`. Mock API calls with `vi.mock('../api/...
 Install in `e2e/`: `npm install --save-dev @playwright/test`
 
 Configure `playwright.config.ts` to:
+
 - Run against `http://localhost:5173` (start server + client before running)
 - Use Chromium by default
 - Store screenshots in `e2e/screenshots/` on failure
@@ -394,18 +417,21 @@ Configure `playwright.config.ts` to:
 **Required test files:**
 
 `auth.spec.ts`
+
 - User can register with valid credentials and land on the boards dashboard
 - User cannot register with a duplicate email (sees error toast)
 - User can log in and log out
 - Logged-out user visiting `/boards` is redirected to `/login`
 
 `boards.spec.ts`
+
 - Create a new board from the dashboard
 - Board appears in the grid with correct title and colour
 - Delete a board (confirm dialog → board disappears)
 - Navigate to a board
 
 `lists-cards.spec.ts`
+
 - Add a list to a board
 - Rename a list inline
 - Add a card to a list
@@ -413,6 +439,7 @@ Configure `playwright.config.ts` to:
 - Drag a card from one list to another and verify the new position persists after page reload
 
 `card-detail.spec.ts`
+
 - Open a card modal
 - Edit the card title
 - Add a description and save
@@ -432,7 +459,9 @@ Configure `playwright.config.ts` to:
 Create all documentation files **after** the implementation is complete. Every doc should include at least one Mermaid diagram where it adds clarity.
 
 ### `docs/features/index.md`
+
 The documentation hub. Must contain:
+
 - A brief project description
 - A table listing every doc file, its path, and one-line summary
 - A high-level Mermaid architecture diagram, e.g.:
@@ -450,6 +479,7 @@ graph TD
 ```
 
 ### `docs/features/architecture.md`
+
 - Full-stack architecture overview
 - Monorepo layout explanation
 - Mermaid ER diagram of the full database schema
@@ -469,6 +499,7 @@ sequenceDiagram
 ```
 
 ### `docs/features/auth.md`
+
 - Registration and login flow description
 - Password hashing strategy (bcrypt, cost factor)
 - Token storage rationale (access in memory, refresh in httpOnly cookie)
@@ -476,12 +507,14 @@ sequenceDiagram
 - Mermaid flowchart of the auth flow
 
 ### `docs/features/boards.md`
+
 - Board creation, listing, and deletion
 - Board colour options
 - API reference for boards and lists
 - Mermaid state diagram of board/list/card lifecycle
 
 ### `docs/features/cards.md`
+
 - Card creation and editing
 - Card detail fields: description, due date, labels, checklists
 - Due date badge colour logic
@@ -489,6 +522,7 @@ sequenceDiagram
 - API reference for cards and card-detail endpoints
 
 ### `docs/features/drag-and-drop.md`
+
 - Library choice (@hello-pangea/dnd) and rationale
 - Component hierarchy (DragDropContext → Droppable → Draggable)
 - Float position strategy with midpoint formula
@@ -506,24 +540,28 @@ Create `CLAUDE.md` in the project root. This file gives Claude Code context abou
 # Trello Clone — CLAUDE.md
 
 ## What this project is
+
 A full-stack Trello clone (portfolio project). React + Vite frontend, Node.js/Express REST API, PostgreSQL via Prisma.
 
 ## Key commands
-| Task | Command |
-|---|---|
-| Start API server | `cd server && npm run dev` |
-| Start React client | `cd client && npm run dev` |
-| Run DB migrations | `cd server && npx prisma migrate dev` |
-| Open Prisma Studio | `cd server && npx prisma studio` |
-| Run server tests | `cd server && npm test` |
-| Run client tests | `cd client && npm test` |
-| Run E2E tests | `cd e2e && npx playwright test` |
-| View E2E report | `cd e2e && npx playwright show-report` |
+
+| Task               | Command                                |
+| ------------------ | -------------------------------------- |
+| Start API server   | `cd server && npm run dev`             |
+| Start React client | `cd client && npm run dev`             |
+| Run DB migrations  | `cd server && npx prisma migrate dev`  |
+| Open Prisma Studio | `cd server && npx prisma studio`       |
+| Run server tests   | `cd server && npm test`                |
+| Run client tests   | `cd client && npm test`                |
+| Run E2E tests      | `cd e2e && npx playwright test`        |
+| View E2E report    | `cd e2e && npx playwright show-report` |
 
 ## Project structure
+
 See README.md for the full directory layout.
 
 ## Coding conventions
+
 - JavaScript (not TypeScript) for server and client; TypeScript only in e2e/
 - camelCase for JS identifiers; snake_case for DB columns
 - Prisma models use PascalCase
@@ -531,17 +569,20 @@ See README.md for the full directory layout.
 - All protected routes require `Authorization: Bearer <token>` header
 
 ## Environment setup
+
 - Copy `.env.example` to `server/.env` and fill in values
 - Requires PostgreSQL running locally (or via Docker: `docker run -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres`)
 - A separate test DB is needed for running server tests (set in `server/.env.test`)
 
 ## Architecture decisions
+
 - Access tokens stored in React state (not localStorage) to prevent XSS
 - Refresh tokens in httpOnly cookies to prevent JS access
 - Float positions for ordering to avoid full-list re-indexes on every drag
 - @hello-pangea/dnd chosen over react-beautiful-dnd (maintained fork)
 
 ## Docs
+
 Full feature documentation is in `docs/features/`. Start with `docs/features/index.md`.
 ```
 
@@ -565,6 +606,7 @@ cd e2e && npx playwright test
 ```
 
 All test suites must pass (0 failures). If any test fails:
+
 1. Read the failure output carefully
 2. Fix the underlying code or test
 3. Re-run until clean
@@ -573,18 +615,19 @@ All test suites must pass (0 failures). If any test fails:
 
 Start both servers, then use Playwright (or a headless browser script) to take screenshots of every key screen and save them to `e2e/screenshots/manual/`:
 
-| Filename | What to capture |
-|---|---|
-| `01-login.png` | Login page |
-| `02-register.png` | Register page |
-| `03-boards-empty.png` | Boards dashboard (no boards yet) |
-| `04-boards-with-data.png` | Boards dashboard with 2–3 boards |
-| `05-board-view.png` | A board with multiple lists and cards |
-| `06-card-modal.png` | Card detail modal open with label + checklist visible |
-| `07-card-modal-overdue.png` | Card modal showing an overdue due-date badge |
-| `08-drag-in-progress.png` | Mid-drag state (a card being dragged) if capturable |
+| Filename                    | What to capture                                       |
+| --------------------------- | ----------------------------------------------------- |
+| `01-login.png`              | Login page                                            |
+| `02-register.png`           | Register page                                         |
+| `03-boards-empty.png`       | Boards dashboard (no boards yet)                      |
+| `04-boards-with-data.png`   | Boards dashboard with 2–3 boards                      |
+| `05-board-view.png`         | A board with multiple lists and cards                 |
+| `06-card-modal.png`         | Card detail modal open with label + checklist visible |
+| `07-card-modal-overdue.png` | Card modal showing an overdue due-date badge          |
+| `08-drag-in-progress.png`   | Mid-drag state (a card being dragged) if capturable   |
 
 After capturing screenshots, Claude must **visually inspect each one** and verify:
+
 - The layout matches the design intent described in "UI & Styling"
 - No visible broken styles, overlapping elements, or missing content
 - Colour-coded due-date badges render correctly
@@ -626,17 +669,18 @@ Every new user must automatically receive **2 pre-filled demo boards** upon regi
 
 ### Board 1: "Product Launch Q2" (colour: `#0079bf`)
 
-| List | Cards |
-|---|---|
-| Backlog | 5 cards — research, onboarding emails, blog post, demo video script, analytics dashboard |
-| To Do | 4 cards — landing page design, Stripe integration, pricing page, error monitoring |
-| In Progress | 3 cards — auth flow, dashboard UI, API rate limiting |
-| Review | 2 cards — DB schema optimization, mobile responsive nav |
-| Done | 3 cards — project setup/CI, design system, user stories |
+| List        | Cards                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------- |
+| Backlog     | 5 cards — research, onboarding emails, blog post, demo video script, analytics dashboard |
+| To Do       | 4 cards — landing page design, Stripe integration, pricing page, error monitoring        |
+| In Progress | 3 cards — auth flow, dashboard UI, API rate limiting                                     |
+| Review      | 2 cards — DB schema optimization, mobile responsive nav                                  |
+| Done        | 3 cards — project setup/CI, design system, user stories                                  |
 
 **Labels** spread across cards: Design, High Priority, Backend, Frontend, Bug, DevOps, Research, Marketing (use the 6 preset colours).
 
 **Checklists** (with partial progress — some items checked, some not):
+
 - "Landing Page Tasks" on the landing page card (2/5 done)
 - "Stripe Integration Steps" on the Stripe card (2/6 done)
 - "Auth Implementation" on the auth card (3/5 done)
@@ -647,17 +691,18 @@ Every new user must automatically receive **2 pre-filled demo boards** upon regi
 
 ### Board 2: "Marketing Campaign — Summer 2026" (colour: `#519839`)
 
-| List | Cards |
-|---|---|
-| Ideas | 6 cards — TikTok series, YouTuber partnerships, referral program, virtual event, comparison pages, Reddit AMA |
-| Planning | 4 cards — email drip campaign, social media calendar, SEO research, ad creatives |
-| In Production | 3 cards — getting started guide, product walkthrough video, testimonial graphics |
-| Scheduled | 3 cards — Product Hunt launch, Twitter thread, newsletter blast |
-| Published | 4 cards — blog post, case study, LinkedIn carousel, press release |
+| List          | Cards                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------- |
+| Ideas         | 6 cards — TikTok series, YouTuber partnerships, referral program, virtual event, comparison pages, Reddit AMA |
+| Planning      | 4 cards — email drip campaign, social media calendar, SEO research, ad creatives                              |
+| In Production | 3 cards — getting started guide, product walkthrough video, testimonial graphics                              |
+| Scheduled     | 3 cards — Product Hunt launch, Twitter thread, newsletter blast                                               |
+| Published     | 4 cards — blog post, case study, LinkedIn carousel, press release                                             |
 
 **Labels**: Social, Video, Growth, Event, SEO, Community, Email, Content, Ads, Design, Launch, PR, High Priority.
 
 **Checklists** (with partial progress):
+
 - "Email Sequence" (3/9 done)
 - "Content Calendar Tasks" (2/5 done)
 - "Getting Started Guide" (3/6 done)
@@ -667,6 +712,7 @@ Every new user must automatically receive **2 pre-filled demo boards** upon regi
 **Due dates**: mix of near-future and further-out dates.
 
 ### Requirements
+
 - Cards should have realistic titles, descriptions (where relevant), and varied data (some cards have labels only, some have checklists only, some have both, some have neither)
 - Checklists should have realistic item text and varied completion percentages
 - The seed should be idempotent-safe when called on registration (each call creates a fresh pair of boards)
@@ -698,6 +744,7 @@ Every new user must automatically receive **2 pre-filled demo boards** upon regi
 ## Quality Bar
 
 This is a portfolio project, so prioritise:
+
 - Clean, readable, well-commented code
 - Sensible folder/file organisation
 - Consistent naming conventions (camelCase JS, snake_case DB)

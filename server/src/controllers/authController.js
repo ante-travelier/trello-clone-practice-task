@@ -20,7 +20,9 @@ function generateAccessToken(userId) {
 }
 
 function generateRefreshToken(userId) {
-  return jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: '7d',
+  });
 }
 
 export async function register(req, res, next) {
@@ -43,8 +45,13 @@ export async function register(req, res, next) {
       data: { name, email, password: hashedPassword },
     });
 
-    // Seed demo boards in the background (don't block registration response)
-    seedDemoBoards(user.id).catch(() => {});
+    // Seed demo boards in the background (don't block registration response).
+    // Skip in test/e2e environments to keep boards predictable for assertions.
+    const skipSeed =
+      process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'e2e';
+    if (!skipSeed) {
+      seedDemoBoards(user.id).catch(() => {});
+    }
 
     res.status(201).json({
       data: { id: user.id, email: user.email, name: user.name },
@@ -106,7 +113,9 @@ export async function refresh(req, res, next) {
     try {
       payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
     } catch {
-      return res.status(401).json({ error: 'Invalid or expired refresh token' });
+      return res
+        .status(401)
+        .json({ error: 'Invalid or expired refresh token' });
     }
 
     const user = await prisma.user.findUnique({

@@ -72,9 +72,7 @@ const mockBoard = {
       id: 'list2',
       title: 'In Progress',
       position: 131072,
-      cards: [
-        { id: 'card3', title: 'Build UI', labels: [], checklists: [] },
-      ],
+      cards: [{ id: 'card3', title: 'Build UI', labels: [], checklists: [] }],
     },
   ],
 };
@@ -154,7 +152,9 @@ describe('BoardView', () => {
 
     await user.click(screen.getByText('Add another list'));
 
-    expect(screen.getByPlaceholderText('Enter list title...')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('Enter list title...')
+    ).toBeInTheDocument();
     expect(screen.getByText('Add list')).toBeInTheDocument();
   });
 
@@ -179,7 +179,9 @@ describe('BoardView', () => {
     await user.click(screen.getByText('Add list'));
 
     await waitFor(() => {
-      expect(listsApi.createList).toHaveBeenCalledWith('board1', { title: 'Done' });
+      expect(listsApi.createList).toHaveBeenCalledWith('board1', {
+        title: 'Done',
+      });
     });
 
     await waitFor(() => {
@@ -201,14 +203,21 @@ describe('BoardView', () => {
     const addCardButtons = screen.getAllByText('Add a card');
     await user.click(addCardButtons[0]);
 
-    expect(screen.getByPlaceholderText('Enter a title for this card...')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('Enter a title for this card...')
+    ).toBeInTheDocument();
     expect(screen.getByText('Add card')).toBeInTheDocument();
   });
 
   it('creates a new card when the add card form is submitted', async () => {
     boardsApi.getBoard.mockResolvedValue(mockBoard);
 
-    const newCard = { id: 'card-new', title: 'New task', labels: [], checklists: [] };
+    const newCard = {
+      id: 'card-new',
+      title: 'New task',
+      labels: [],
+      checklists: [],
+    };
     cardsApi.createCard.mockResolvedValue(newCard);
 
     const user = userEvent.setup();
@@ -222,12 +231,16 @@ describe('BoardView', () => {
     const addCardButtons = screen.getAllByText('Add a card');
     await user.click(addCardButtons[0]);
 
-    const textarea = screen.getByPlaceholderText('Enter a title for this card...');
+    const textarea = screen.getByPlaceholderText(
+      'Enter a title for this card...'
+    );
     await user.type(textarea, 'New task');
     await user.click(screen.getByText('Add card'));
 
     await waitFor(() => {
-      expect(cardsApi.createCard).toHaveBeenCalledWith('list1', { title: 'New task' });
+      expect(cardsApi.createCard).toHaveBeenCalledWith('list1', {
+        title: 'New task',
+      });
     });
 
     await waitFor(() => {

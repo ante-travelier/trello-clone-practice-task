@@ -4,13 +4,13 @@ A full-stack Trello clone built as a portfolio project. This application replica
 
 ## Documentation Index
 
-| Document | Description |
-|---|---|
-| [Architecture](./architecture.md) | Full-stack architecture overview, monorepo layout, ER diagram, and JWT refresh flow |
-| [Authentication](./auth.md) | Registration, login, password hashing, token strategy, and API reference |
-| [Boards](./boards.md) | Board CRUD operations, color presets, list management, and API reference |
-| [Cards](./cards.md) | Card creation/editing, due date logic, checklists, labels, and API reference |
-| [Drag and Drop](./drag-and-drop.md) | @hello-pangea/dnd integration, position strategy, and optimistic updates |
+| Document                            | Description                                                                         |
+| ----------------------------------- | ----------------------------------------------------------------------------------- |
+| [Architecture](./architecture.md)   | Full-stack architecture overview, monorepo layout, ER diagram, and JWT refresh flow |
+| [Authentication](./auth.md)         | Registration, login, password hashing, token strategy, and API reference            |
+| [Boards](./boards.md)               | Board CRUD operations, color presets, list management, and API reference            |
+| [Cards](./cards.md)                 | Card creation/editing, due date logic, checklists, labels, and API reference        |
+| [Drag and Drop](./drag-and-drop.md) | @hello-pangea/dnd integration, position strategy, and optimistic updates            |
 
 ## Architecture at a Glance
 

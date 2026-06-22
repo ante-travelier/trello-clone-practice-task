@@ -11,20 +11,22 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
-app.use(cors({
-  credentials: true,
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc)
-    if (!origin) return callback(null, true);
-    const allowed = [
-      process.env.CLIENT_URL,
-      'http://antes-mac-mini.local:5173',
-      'http://192.168.1.50:5173',
-    ];
-    if (allowed.includes(origin)) return callback(null, true);
-    callback(new Error('Not allowed by CORS'));
-  },
-}));
+app.use(
+  cors({
+    credentials: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc)
+      if (!origin) return callback(null, true);
+      const allowed = [
+        process.env.CLIENT_URL,
+        'http://antes-mac-mini.local:5173',
+        'http://192.168.1.50:5173',
+      ];
+      if (allowed.includes(origin)) return callback(null, true);
+      callback(new Error('Not allowed by CORS'));
+    },
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 

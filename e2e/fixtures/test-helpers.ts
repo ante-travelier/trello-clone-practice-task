@@ -8,7 +8,7 @@ export async function registerUser(
   page: Page,
   name: string,
   email: string,
-  password: string,
+  password: string
 ): Promise<void> {
   await page.goto('/register');
   await page.getByLabel('Name').fill(name);
@@ -26,7 +26,7 @@ export async function registerUser(
 export async function loginUser(
   page: Page,
   email: string,
-  password: string,
+  password: string
 ): Promise<void> {
   await page.goto('/login');
   await page.getByLabel('Email').fill(email);
@@ -53,7 +53,7 @@ export async function createBoard(page: Page, title: string): Promise<void> {
  */
 export async function navigateToBoard(
   page: Page,
-  title: string,
+  title: string
 ): Promise<void> {
   await page.getByText(title).click();
   await page.waitForURL('**/boards/**');

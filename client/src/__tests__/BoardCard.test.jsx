@@ -104,7 +104,9 @@ describe('BoardCard (within BoardsPage)', () => {
     const deleteButton = screen.getByTitle('Delete board');
     await user.click(deleteButton);
 
-    expect(confirmSpy).toHaveBeenCalledWith('Delete board "Delete Me"? This cannot be undone.');
+    expect(confirmSpy).toHaveBeenCalledWith(
+      'Delete board "Delete Me"? This cannot be undone.'
+    );
 
     confirmSpy.mockRestore();
   });

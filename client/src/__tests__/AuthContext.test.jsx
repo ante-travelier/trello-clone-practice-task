@@ -1,6 +1,6 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthProvider, AuthContext } from '../context/AuthContext.jsx';
+import { AuthProvider } from '../context/AuthContext.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 import * as authApi from '../api/auth.js';
 import { setAccessToken } from '../api/axios.js';
@@ -25,8 +25,14 @@ function TestConsumer() {
   return (
     <div>
       <div data-testid="user">{user ? user.name : 'none'}</div>
-      <button onClick={() => login('test@example.com', 'password123')}>Login</button>
-      <button onClick={() => register('Test', 'test@example.com', 'password123')}>Register</button>
+      <button onClick={() => login('test@example.com', 'password123')}>
+        Login
+      </button>
+      <button
+        onClick={() => register('Test', 'test@example.com', 'password123')}
+      >
+        Register
+      </button>
       <button onClick={() => logout()}>Logout</button>
     </div>
   );
@@ -54,7 +60,12 @@ describe('AuthContext', () => {
 
   it('attempts to refresh token on mount', async () => {
     authApi.refreshToken.mockResolvedValue({
-      data: { data: { accessToken: 'refreshed-token', user: { name: 'Refreshed User' } } },
+      data: {
+        data: {
+          accessToken: 'refreshed-token',
+          user: { name: 'Refreshed User' },
+        },
+      },
     });
 
     render(
@@ -107,7 +118,10 @@ describe('AuthContext', () => {
     await user.click(screen.getByText('Login'));
 
     await waitFor(() => {
-      expect(authApi.login).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(authApi.login).toHaveBeenCalledWith(
+        'test@example.com',
+        'password123'
+      );
     });
 
     expect(setAccessToken).toHaveBeenCalledWith('abc-token');
@@ -190,10 +204,17 @@ describe('AuthContext', () => {
     await user.click(screen.getByText('Register'));
 
     await waitFor(() => {
-      expect(authApi.register).toHaveBeenCalledWith('Test', 'test@example.com', 'password123');
+      expect(authApi.register).toHaveBeenCalledWith(
+        'Test',
+        'test@example.com',
+        'password123'
+      );
     });
 
-    expect(authApi.login).toHaveBeenCalledWith('test@example.com', 'password123');
+    expect(authApi.login).toHaveBeenCalledWith(
+      'test@example.com',
+      'password123'
+    );
     expect(screen.getByTestId('user')).toHaveTextContent('Test');
   });
 });

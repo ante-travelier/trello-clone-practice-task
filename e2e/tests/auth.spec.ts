@@ -11,7 +11,9 @@ function uniqueEmail(): string {
 }
 
 test.describe('Authentication', () => {
-  test('user can register with valid credentials and land on /boards', async ({ page }) => {
+  test('user can register with valid credentials and land on /boards', async ({
+    page,
+  }) => {
     const email = uniqueEmail();
     await registerUser(page, 'Test User', email, 'password123');
 
@@ -38,7 +40,9 @@ test.describe('Authentication', () => {
     await page.getByRole('button', { name: 'Sign up' }).click();
 
     // Should see an error message (toast or inline)
-    await expect(page.getByText(/already in use|Registration failed/i)).toBeVisible({
+    await expect(
+      page.getByText(/already in use|Registration failed/i)
+    ).toBeVisible({
       timeout: 5000,
     });
   });
@@ -61,7 +65,9 @@ test.describe('Authentication', () => {
     await expect(page.getByText('Your Boards')).toBeVisible();
   });
 
-  test('logged-out user visiting /boards is redirected to /login', async ({ page }) => {
+  test('logged-out user visiting /boards is redirected to /login', async ({
+    page,
+  }) => {
     await page.goto('/boards');
     await page.waitForURL('**/login');
     await expect(page).toHaveURL(/\/login$/);

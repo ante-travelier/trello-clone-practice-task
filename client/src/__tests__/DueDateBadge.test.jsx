@@ -25,7 +25,10 @@ describe('DueDateBadge', () => {
 
     render(<DueDateBadge date={today.toISOString()} />);
 
-    const formatted = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const formatted = today.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
     const badge = screen.getByText(formatted);
     expect(badge.closest('span')).toHaveClass('bg-yellow-400');
     expect(badge.closest('span')).toHaveClass('text-gray-900');
@@ -37,7 +40,10 @@ describe('DueDateBadge', () => {
 
     render(<DueDateBadge date={futureDate.toISOString()} />);
 
-    const formatted = futureDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const formatted = futureDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
     const badge = screen.getByText(formatted);
     expect(badge.closest('span')).toHaveClass('bg-gray-200');
     expect(badge.closest('span')).toHaveClass('text-gray-700');
@@ -49,7 +55,10 @@ describe('DueDateBadge', () => {
 
     render(<DueDateBadge date={yesterday.toISOString()} />);
 
-    const formatted = yesterday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const formatted = yesterday.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
     const badge = screen.getByText(formatted);
     expect(badge.closest('span')).toHaveClass('bg-red-500');
   });
@@ -60,7 +69,10 @@ describe('DueDateBadge', () => {
 
     render(<DueDateBadge date={tomorrow.toISOString()} />);
 
-    const formatted = tomorrow.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const formatted = tomorrow.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
     const badge = screen.getByText(formatted);
     expect(badge.closest('span')).toHaveClass('bg-gray-200');
   });
@@ -77,7 +89,9 @@ describe('DueDateBadge', () => {
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 5);
 
-    const { container } = render(<DueDateBadge date={futureDate.toISOString()} />);
+    const { container } = render(
+      <DueDateBadge date={futureDate.toISOString()} />
+    );
 
     const svg = container.querySelector('svg');
     expect(svg).toBeInTheDocument();

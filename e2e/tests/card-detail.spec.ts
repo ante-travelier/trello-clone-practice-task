@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { registerUser, createBoard, navigateToBoard } from '../fixtures/test-helpers';
+import {
+  registerUser,
+  createBoard,
+  navigateToBoard,
+} from '../fixtures/test-helpers';
 
 function uniqueEmail(): string {
   const timestamp = Date.now();
@@ -28,7 +32,9 @@ test.describe('Card Detail Modal', () => {
 
     // Create a card
     await page.getByText('Add a card').click();
-    await page.getByPlaceholder('Enter a title for this card...').fill(cardTitle);
+    await page
+      .getByPlaceholder('Enter a title for this card...')
+      .fill(cardTitle);
     await page.getByRole('button', { name: 'Add card' }).click();
     await expect(page.getByText(cardTitle)).toBeVisible();
   });
@@ -68,7 +74,7 @@ test.describe('Card Detail Modal', () => {
     await modal.getByRole('button', { name: 'Save' }).click();
 
     await expect(
-      modal.getByText('This is a detailed description for the test card.'),
+      modal.getByText('This is a detailed description for the test card.')
     ).toBeVisible();
   });
 
@@ -106,23 +112,26 @@ test.describe('Card Detail Modal', () => {
     const modal = page.locator('.fixed.inset-0');
     await expect(modal).toBeVisible();
 
-    // Add a checklist
+    // Add a checklist — scroll to the button first to ensure it's in view,
+    // then use keyboard submission to avoid ambiguous multi-"Add"-button clicks.
+    await modal.getByText('+ Add Checklist').scrollIntoViewIfNeeded();
     await modal.getByText('+ Add Checklist').click();
-    await modal.getByPlaceholder('Checklist title...').fill('QA Steps');
-    // Click the "Add" button next to the checklist title input
-    await modal.getByRole('button', { name: 'Add' }).first().click();
+    const checklistTitleInput = modal.getByPlaceholder('Checklist title...');
+    await checklistTitleInput.fill('QA Steps');
+    await checklistTitleInput.press('Enter');
 
     await expect(modal.getByText('QA Steps')).toBeVisible();
 
     // Add an item to the checklist
-    await modal.getByPlaceholder('Add an item...').fill('Verify login');
-    // Click the "Add" button for the checklist item
-    await modal.getByRole('button', { name: 'Add' }).last().click();
+    const itemInput = modal.getByPlaceholder('Add an item...');
+    await itemInput.fill('Verify login');
+    await itemInput.press('Enter');
     await expect(modal.getByText('Verify login')).toBeVisible();
 
-    // Check the item
+    // Check the item — use click() since the checkbox is React-controlled
+    // (check() requires the DOM state to flip immediately, but state is async).
     const checkbox = modal.locator('input[type="checkbox"]').first();
-    await checkbox.check();
+    await checkbox.click();
 
     // The progress bar should update (shows 100%)
     await expect(modal.getByText('100%')).toBeVisible({ timeout: 5000 });
@@ -134,7 +143,11 @@ test.describe('Card Detail Modal', () => {
     await expect(modal).toBeVisible();
 
     // Click the X (close) button in the top-right of the modal
-    await modal.locator('button').filter({ has: page.locator('svg path') }).first().click();
+    await modal
+      .locator('button')
+      .filter({ has: page.locator('svg path') })
+      .first()
+      .click();
 
     await expect(modal).not.toBeVisible({ timeout: 3000 });
   });
