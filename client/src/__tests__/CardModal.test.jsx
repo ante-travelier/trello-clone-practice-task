@@ -80,7 +80,9 @@ describe('CardModal', () => {
       renderCardModal({ card: cardWithoutDesc });
 
       await waitFor(() => {
-        expect(screen.getByText('Add a more detailed description...')).toBeInTheDocument();
+        expect(
+          screen.getByText('Add a more detailed description...')
+        ).toBeInTheDocument();
       });
     });
 
@@ -127,7 +129,10 @@ describe('CardModal', () => {
     it('saves title on blur', async () => {
       const user = userEvent.setup();
 
-      cardsApi.updateCard.mockResolvedValue({ ...baseCard, title: 'Updated Title' });
+      cardsApi.updateCard.mockResolvedValue({
+        ...baseCard,
+        title: 'Updated Title',
+      });
 
       renderCardModal();
 
@@ -153,7 +158,10 @@ describe('CardModal', () => {
     it('saves title on Enter key', async () => {
       const user = userEvent.setup();
 
-      cardsApi.updateCard.mockResolvedValue({ ...baseCard, title: 'Enter Title' });
+      cardsApi.updateCard.mockResolvedValue({
+        ...baseCard,
+        title: 'Enter Title',
+      });
 
       renderCardModal();
 
@@ -249,7 +257,9 @@ describe('CardModal', () => {
 
       await user.click(screen.getByText('+ Add Checklist'));
 
-      expect(screen.getByPlaceholderText('Checklist title...')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Checklist title...')
+      ).toBeInTheDocument();
     });
 
     it('renders checklist with progress', async () => {
@@ -325,7 +335,11 @@ describe('CardModal', () => {
       await user.click(checkboxes[0]);
 
       await waitFor(() => {
-        expect(cardDetailsApi.toggleChecklistItem).toHaveBeenCalledWith('card1', 'cl1', 'item1');
+        expect(cardDetailsApi.toggleChecklistItem).toHaveBeenCalledWith(
+          'card1',
+          'cl1',
+          'item1'
+        );
       });
 
       await waitFor(() => {

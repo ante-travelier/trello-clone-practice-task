@@ -79,10 +79,10 @@ flowchart TD
 
 ## Token Storage Rationale
 
-| Token | Storage | Why |
-|---|---|---|
-| Access token | React state (in-memory) | Cannot be read by XSS; lost on page refresh (refresh flow recovers it) |
-| Refresh token | httpOnly cookie | Cannot be accessed by JavaScript; automatically sent with requests to `/api/auth/refresh` |
+| Token         | Storage                 | Why                                                                                       |
+| ------------- | ----------------------- | ----------------------------------------------------------------------------------------- |
+| Access token  | React state (in-memory) | Cannot be read by XSS; lost on page refresh (refresh flow recovers it)                    |
+| Refresh token | httpOnly cookie         | Cannot be accessed by JavaScript; automatically sent with requests to `/api/auth/refresh` |
 
 ## API Reference
 
@@ -91,6 +91,7 @@ flowchart TD
 Register a new user account.
 
 **Request body:**
+
 ```json
 {
   "name": "Jane Doe",
@@ -100,6 +101,7 @@ Register a new user account.
 ```
 
 **Success response** (`201`):
+
 ```json
 {
   "data": {
@@ -111,6 +113,7 @@ Register a new user account.
 ```
 
 **Error responses:**
+
 - `400` - Validation error (missing fields, short password)
 - `409` - Email already in use
 
@@ -119,6 +122,7 @@ Register a new user account.
 Authenticate and receive tokens.
 
 **Request body:**
+
 ```json
 {
   "email": "jane@example.com",
@@ -127,6 +131,7 @@ Authenticate and receive tokens.
 ```
 
 **Success response** (`200`):
+
 ```json
 {
   "data": {
@@ -143,6 +148,7 @@ Authenticate and receive tokens.
 **Set-Cookie header:** `refreshToken=eyJhbG...; Path=/; HttpOnly; SameSite=Lax`
 
 **Error responses:**
+
 - `400` - Validation error
 - `401` - Invalid email or password
 
@@ -153,6 +159,7 @@ Exchange a refresh cookie for a new access token.
 **Request:** No body required. The `refreshToken` cookie is sent automatically.
 
 **Success response** (`200`):
+
 ```json
 {
   "data": {
@@ -162,6 +169,7 @@ Exchange a refresh cookie for a new access token.
 ```
 
 **Error responses:**
+
 - `401` - Missing or invalid/expired refresh token
 
 ### `POST /api/auth/logout`
@@ -169,6 +177,7 @@ Exchange a refresh cookie for a new access token.
 Clear the refresh token cookie.
 
 **Success response** (`200`):
+
 ```json
 {
   "data": {

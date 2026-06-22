@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { registerUser, createBoard, navigateToBoard } from '../fixtures/test-helpers';
+import {
+  registerUser,
+  createBoard,
+  navigateToBoard,
+} from '../fixtures/test-helpers';
 
 function uniqueEmail(): string {
   const timestamp = Date.now();
@@ -38,11 +42,15 @@ test.describe('Boards', () => {
 
     // Hover over the board tile to reveal the delete button, then click it.
     // Use the innermost card div (has h3 but no descendant divs with h3).
-    const boardTile = page.locator('div.group').filter({ hasText: /^Board To Delete$/ });
+    const boardTile = page
+      .locator('div.group')
+      .filter({ hasText: /^Board To Delete$/ });
     await boardTile.hover();
     await boardTile.getByTitle('Delete board').click();
 
-    await expect(page.getByText('Board To Delete')).not.toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Board To Delete')).not.toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('navigate to a board', async ({ page }) => {

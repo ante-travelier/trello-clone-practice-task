@@ -4,11 +4,11 @@
 
 The Trello Clone is a full-stack JavaScript application organized as a monorepo with three top-level packages:
 
-| Package | Purpose | Key Technologies |
-|---|---|---|
+| Package   | Purpose                 | Key Technologies                                  |
+| --------- | ----------------------- | ------------------------------------------------- |
 | `client/` | Single-page application | React 18, Vite 5, Tailwind CSS, @hello-pangea/dnd |
-| `server/` | REST API | Express 4, Prisma ORM, bcryptjs, jsonwebtoken |
-| `e2e/` | End-to-end tests | Playwright |
+| `server/` | REST API                | Express 4, Prisma ORM, bcryptjs, jsonwebtoken     |
+| `e2e/`    | End-to-end tests        | Playwright                                        |
 
 ## Monorepo Layout
 
@@ -148,11 +148,11 @@ sequenceDiagram
 
 ## Key Design Decisions
 
-| Decision | Rationale |
-|---|---|
-| Access token in React state (not localStorage) | Prevents XSS from reading the token; a page refresh requires re-authentication via the refresh cookie |
-| Refresh token in httpOnly cookie | JavaScript cannot access the cookie, mitigating XSS-based token theft |
-| Float-based position field | Allows inserting items between existing positions without reindexing the entire list; see [Drag and Drop](./drag-and-drop.md) |
-| @hello-pangea/dnd over react-beautiful-dnd | Actively maintained community fork with the same API surface |
-| Zod validation on the server | Provides type-safe request validation with clear error messages |
-| Prisma cascading deletes | Deleting a board removes all its lists; deleting a list removes all its cards; deleting a card removes labels, checklists, and items |
+| Decision                                       | Rationale                                                                                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Access token in React state (not localStorage) | Prevents XSS from reading the token; a page refresh requires re-authentication via the refresh cookie                                |
+| Refresh token in httpOnly cookie               | JavaScript cannot access the cookie, mitigating XSS-based token theft                                                                |
+| Float-based position field                     | Allows inserting items between existing positions without reindexing the entire list; see [Drag and Drop](./drag-and-drop.md)        |
+| @hello-pangea/dnd over react-beautiful-dnd     | Actively maintained community fork with the same API surface                                                                         |
+| Zod validation on the server                   | Provides type-safe request validation with clear error messages                                                                      |
+| Prisma cascading deletes                       | Deleting a board removes all its lists; deleting a list removes all its cards; deleting a card removes labels, checklists, and items |

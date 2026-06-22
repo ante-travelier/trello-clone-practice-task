@@ -26,7 +26,8 @@ export default function BoardView() {
     if (addingList && addListInputRef.current) {
       addListInputRef.current.focus();
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+        scrollContainerRef.current.scrollLeft =
+          scrollContainerRef.current.scrollWidth;
       }
     }
   }, [addingList]);
@@ -46,7 +47,9 @@ export default function BoardView() {
   async function handleAddList() {
     if (!newListTitle.trim()) return;
     try {
-      const list = await listsApi.createList(id, { title: newListTitle.trim() });
+      const list = await listsApi.createList(id, {
+        title: newListTitle.trim(),
+      });
       setLists((prev) => [...prev, { ...list, cards: [] }]);
       setNewListTitle('');
     } catch {
@@ -90,7 +93,11 @@ export default function BoardView() {
     const { source, destination, type } = result;
 
     if (!destination) return;
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
 
     if (type === 'LIST') {
       const reordered = Array.from(lists);
@@ -101,7 +108,10 @@ export default function BoardView() {
       setLists(reordered);
 
       const itemsWithoutMoved = reordered.filter((l) => l.id !== moved.id);
-      const newPosition = calculatePosition(itemsWithoutMoved, destination.index);
+      const newPosition = calculatePosition(
+        itemsWithoutMoved,
+        destination.index
+      );
 
       try {
         await listsApi.moveList(id, moved.id, { position: newPosition });
@@ -135,8 +145,13 @@ export default function BoardView() {
           )
         );
 
-        const cardsWithoutMoved = reorderedCards.filter((c) => c.id !== movedCard.id);
-        const newPosition = calculatePosition(cardsWithoutMoved, destination.index);
+        const cardsWithoutMoved = reorderedCards.filter(
+          (c) => c.id !== movedCard.id
+        );
+        const newPosition = calculatePosition(
+          cardsWithoutMoved,
+          destination.index
+        );
 
         try {
           await cardsApi.updateCard(sourceListId, movedCard.id, {
@@ -165,8 +180,13 @@ export default function BoardView() {
           })
         );
 
-        const cardsWithoutMoved = destCards.filter((c) => c.id !== movedCard.id);
-        const newPosition = calculatePosition(cardsWithoutMoved, destination.index);
+        const cardsWithoutMoved = destCards.filter(
+          (c) => c.id !== movedCard.id
+        );
+        const newPosition = calculatePosition(
+          cardsWithoutMoved,
+          destination.index
+        );
 
         try {
           await cardsApi.updateCard(sourceListId, movedCard.id, {
@@ -213,7 +233,9 @@ export default function BoardView() {
       {/* Board header */}
       <div className="pt-12">
         <div className="px-4 py-3 flex items-center gap-3">
-          <h1 className="text-lg font-bold text-white drop-shadow">{board.title}</h1>
+          <h1 className="text-lg font-bold text-white drop-shadow">
+            {board.title}
+          </h1>
         </div>
       </div>
 
@@ -276,7 +298,12 @@ export default function BoardView() {
                         }}
                         className="text-gray-500 hover:text-gray-700 p-1.5"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -292,7 +319,12 @@ export default function BoardView() {
                     onClick={() => setAddingList(true)}
                     className="w-full bg-white/25 hover:bg-white/40 text-white rounded-xl px-4 py-3 text-sm font-medium text-left transition-colors flex items-center gap-1"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"

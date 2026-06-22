@@ -61,7 +61,7 @@ describe('POST /api/boards/:boardId/lists', () => {
     expect(res.status).toBe(404);
   });
 
-  test('returns 403 when creating list on another user\'s board', async () => {
+  test("returns 403 when creating list on another user's board", async () => {
     const owner = await createTestUser({ email: 'owner@example.com' });
     const other = await createTestUser({ email: 'other@example.com' });
     const board = await createTestBoard(owner.token);

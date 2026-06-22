@@ -46,11 +46,9 @@ describe('authenticate middleware', () => {
   });
 
   test('rejects request with token signed by wrong secret', async () => {
-    const badToken = jwt.sign(
-      { userId: 'some-user-id' },
-      'wrong-secret-key',
-      { expiresIn: '15m' }
-    );
+    const badToken = jwt.sign({ userId: 'some-user-id' }, 'wrong-secret-key', {
+      expiresIn: '15m',
+    });
 
     const res = await request
       .get('/api/boards')

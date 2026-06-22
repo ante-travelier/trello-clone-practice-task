@@ -4,12 +4,17 @@ export default function DueDateBadge({ date }) {
   const dueDate = new Date(date);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dueDateNormalized = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+  const dueDateNormalized = new Date(
+    dueDate.getFullYear(),
+    dueDate.getMonth(),
+    dueDate.getDate()
+  );
 
   const diffMs = dueDateNormalized.getTime() - today.getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
-  let className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ';
+  let className =
+    'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ';
 
   if (diffDays < 0) {
     className += 'bg-red-500 text-white';
@@ -26,7 +31,12 @@ export default function DueDateBadge({ date }) {
 
   return (
     <span className={className}>
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-3 h-3"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"

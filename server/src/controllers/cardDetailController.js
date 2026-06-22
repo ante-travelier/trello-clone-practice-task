@@ -127,7 +127,8 @@ export async function updateChecklistItem(req, res, next) {
       return res.status(404).json({ error: 'Item not found' });
     }
 
-    const checked = req.body.checked !== undefined ? req.body.checked : !current.checked;
+    const checked =
+      req.body.checked !== undefined ? req.body.checked : !current.checked;
 
     const item = await prisma.checklistItem.update({
       where: { id: req.params.itemId },

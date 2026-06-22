@@ -4,15 +4,29 @@ import * as cardDetailsApi from '../api/cardDetails.js';
 import * as cardsApi from '../api/cards.js';
 import DueDateBadge from './DueDateBadge.jsx';
 
-const LABEL_COLORS = ['#61bd4f', '#f2d600', '#ff9f1a', '#eb5a46', '#c377e0', '#0079bf'];
+const LABEL_COLORS = [
+  '#61bd4f',
+  '#f2d600',
+  '#ff9f1a',
+  '#eb5a46',
+  '#c377e0',
+  '#0079bf',
+];
 
-export default function CardModal({ card: initialCard, listId, onClose, onUpdate }) {
+export default function CardModal({
+  card: initialCard,
+  listId,
+  onClose,
+  onUpdate,
+}) {
   const [card, setCard] = useState(initialCard);
   const [editingTitle, setEditingTitle] = useState(false);
   const [title, setTitle] = useState(initialCard.title);
   const [editingDesc, setEditingDesc] = useState(false);
   const [description, setDescription] = useState(initialCard.description || '');
-  const [dueDate, setDueDate] = useState(initialCard.dueDate ? initialCard.dueDate.slice(0, 10) : '');
+  const [dueDate, setDueDate] = useState(
+    initialCard.dueDate ? initialCard.dueDate.slice(0, 10) : ''
+  );
   const [showLabelForm, setShowLabelForm] = useState(false);
   const [labelText, setLabelText] = useState('');
   const [labelColor, setLabelColor] = useState(LABEL_COLORS[0]);
@@ -62,7 +76,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
       return;
     }
     try {
-      const updated = await cardsApi.updateCard(listId, card.id, { title: title.trim() });
+      const updated = await cardsApi.updateCard(listId, card.id, {
+        title: title.trim(),
+      });
       setCard((prev) => ({ ...prev, title: updated.title }));
       onUpdate({ ...card, title: updated.title });
     } catch {
@@ -74,7 +90,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
 
   async function saveDescription() {
     try {
-      const updated = await cardsApi.updateCard(listId, card.id, { description });
+      const updated = await cardsApi.updateCard(listId, card.id, {
+        description,
+      });
       setCard((prev) => ({ ...prev, description: updated.description }));
       onUpdate({ ...card, description: updated.description });
     } catch {
@@ -187,8 +205,18 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
 
@@ -222,7 +250,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
 
         {/* Labels */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Labels</h3>
+          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">
+            Labels
+          </h3>
           <div className="flex flex-wrap gap-2 mb-2">
             {card.labels?.map((label) => (
               <span
@@ -235,8 +265,18 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
                   onClick={() => handleDeleteLabel(label.id)}
                   className="ml-1 hover:bg-white/30 rounded-full p-0.5 transition-colors"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </span>
@@ -259,7 +299,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
                     key={color}
                     onClick={() => setLabelColor(color)}
                     className={`w-8 h-8 rounded-full transition-transform ${
-                      labelColor === color ? 'ring-2 ring-offset-2 ring-gray-600 scale-110' : 'hover:scale-105'
+                      labelColor === color
+                        ? 'ring-2 ring-offset-2 ring-gray-600 scale-110'
+                        : 'hover:scale-105'
                     }`}
                     style={{ backgroundColor: color }}
                   />
@@ -292,7 +334,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
 
         {/* Due Date */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Due Date</h3>
+          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">
+            Due Date
+          </h3>
           <div className="flex items-center gap-3">
             <input
               type="date"
@@ -307,8 +351,18 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
                   onClick={() => saveDueDate('')}
                   className="text-gray-400 hover:text-red-500 transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </>
@@ -318,7 +372,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
 
         {/* Description */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">Description</h3>
+          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-2">
+            Description
+          </h3>
           {editingDesc ? (
             <div>
               <textarea
@@ -358,17 +414,25 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
 
         {/* Checklists */}
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3">Checklists</h3>
+          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3">
+            Checklists
+          </h3>
 
           {card.checklists?.map((checklist) => {
             const total = checklist.items?.length || 0;
-            const checked = checklist.items?.filter((i) => i.checked).length || 0;
+            const checked =
+              checklist.items?.filter((i) => i.checked).length || 0;
             const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
 
             return (
-              <div key={checklist.id} className="mb-4 bg-gray-50 rounded-lg p-3 border border-gray-100">
+              <div
+                key={checklist.id}
+                className="mb-4 bg-gray-50 rounded-lg p-3 border border-gray-100"
+              >
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-gray-800 text-sm">{checklist.title}</h4>
+                  <h4 className="font-semibold text-gray-800 text-sm">
+                    {checklist.title}
+                  </h4>
                   <button
                     onClick={() => handleDeleteChecklist(checklist.id)}
                     className="text-gray-400 hover:text-red-500 text-sm transition-colors"
@@ -405,7 +469,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
                       />
                       <span
                         className={`flex-1 text-sm ${
-                          item.checked ? 'line-through text-gray-400' : 'text-gray-700'
+                          item.checked
+                            ? 'line-through text-gray-400'
+                            : 'text-gray-700'
                         }`}
                       >
                         {item.text}
@@ -414,8 +480,18 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
                         onClick={() => handleDeleteItem(checklist.id, item.id)}
                         className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -434,7 +510,9 @@ export default function CardModal({ card: initialCard, listId, onClose, onUpdate
                         [checklist.id]: e.target.value,
                       }))
                     }
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddChecklistItem(checklist.id)}
+                    onKeyDown={(e) =>
+                      e.key === 'Enter' && handleAddChecklistItem(checklist.id)
+                    }
                     className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-400"
                   />
                   <button

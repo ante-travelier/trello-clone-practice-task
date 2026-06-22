@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { registerUser, createBoard, navigateToBoard } from '../fixtures/test-helpers';
+import {
+  registerUser,
+  createBoard,
+  navigateToBoard,
+} from '../fixtures/test-helpers';
 
 function uniqueEmail(): string {
   const timestamp = Date.now();
@@ -55,7 +59,9 @@ test.describe('Lists & Cards', () => {
 
     // Add a card
     await page.getByText('Add a card').click();
-    await page.getByPlaceholder('Enter a title for this card...').fill('My First Card');
+    await page
+      .getByPlaceholder('Enter a title for this card...')
+      .fill('My First Card');
     await page.getByRole('button', { name: 'Add card' }).click();
 
     await expect(page.getByText('My First Card')).toBeVisible();
@@ -70,7 +76,9 @@ test.describe('Lists & Cards', () => {
 
     // Add a card to it
     await page.getByText('Add a card').click();
-    await page.getByPlaceholder('Enter a title for this card...').fill('Doomed Card');
+    await page
+      .getByPlaceholder('Enter a title for this card...')
+      .fill('Doomed Card');
     await page.getByRole('button', { name: 'Add card' }).click();
     await expect(page.getByText('Doomed Card')).toBeVisible();
 
@@ -78,12 +86,18 @@ test.describe('Lists & Cards', () => {
     page.on('dialog', (dialog) => dialog.accept());
 
     // Click the delete button on the list (the trash icon in the list header)
-    const listHeader = page.locator('h3', { hasText: 'Temporary List' }).locator('..');
+    const listHeader = page
+      .locator('h3', { hasText: 'Temporary List' })
+      .locator('..');
     await listHeader.locator('button').click();
 
     // Both the list title and the card should be gone
-    await expect(page.getByText('Temporary List')).not.toBeVisible({ timeout: 5000 });
-    await expect(page.getByText('Doomed Card')).not.toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Temporary List')).not.toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByText('Doomed Card')).not.toBeVisible({
+      timeout: 5000,
+    });
   });
 
   // Drag-and-drop tests are skipped because they require complex mouse

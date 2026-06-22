@@ -7,7 +7,7 @@ import {
 } from './setup.js';
 
 describe('GET /api/boards', () => {
-  test('returns only the authenticated user\'s boards', async () => {
+  test("returns only the authenticated user's boards", async () => {
     const userA = await createTestUser({ email: 'a@example.com' });
     const userB = await createTestUser({ email: 'b@example.com' });
 
@@ -106,7 +106,7 @@ describe('GET /api/boards/:id', () => {
     expect(res.body).toHaveProperty('error');
   });
 
-  test('returns 403 for another user\'s board', async () => {
+  test("returns 403 for another user's board", async () => {
     const owner = await createTestUser({ email: 'owner@example.com' });
     const other = await createTestUser({ email: 'other@example.com' });
 
@@ -147,7 +147,7 @@ describe('PATCH /api/boards/:id', () => {
     expect(res.status).toBe(404);
   });
 
-  test('returns 403 when updating another user\'s board', async () => {
+  test("returns 403 when updating another user's board", async () => {
     const owner = await createTestUser({ email: 'owner@example.com' });
     const other = await createTestUser({ email: 'other@example.com' });
     const board = await createTestBoard(owner.token);
@@ -192,7 +192,7 @@ describe('DELETE /api/boards/:id', () => {
     expect(res.status).toBe(404);
   });
 
-  test('returns 403 when deleting another user\'s board', async () => {
+  test("returns 403 when deleting another user's board", async () => {
     const owner = await createTestUser({ email: 'owner@example.com' });
     const other = await createTestUser({ email: 'other@example.com' });
     const board = await createTestBoard(owner.token);

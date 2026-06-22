@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { registerUser, createBoard, navigateToBoard } from '../fixtures/test-helpers';
+import {
+  registerUser,
+  createBoard,
+  navigateToBoard,
+} from '../fixtures/test-helpers';
 
 function uniqueEmail(): string {
   const timestamp = Date.now();
@@ -28,7 +32,9 @@ test.describe('Card Detail Modal', () => {
 
     // Create a card
     await page.getByText('Add a card').click();
-    await page.getByPlaceholder('Enter a title for this card...').fill(cardTitle);
+    await page
+      .getByPlaceholder('Enter a title for this card...')
+      .fill(cardTitle);
     await page.getByRole('button', { name: 'Add card' }).click();
     await expect(page.getByText(cardTitle)).toBeVisible();
   });
@@ -68,7 +74,7 @@ test.describe('Card Detail Modal', () => {
     await modal.getByRole('button', { name: 'Save' }).click();
 
     await expect(
-      modal.getByText('This is a detailed description for the test card.'),
+      modal.getByText('This is a detailed description for the test card.')
     ).toBeVisible();
   });
 
@@ -137,7 +143,11 @@ test.describe('Card Detail Modal', () => {
     await expect(modal).toBeVisible();
 
     // Click the X (close) button in the top-right of the modal
-    await modal.locator('button').filter({ has: page.locator('svg path') }).first().click();
+    await modal
+      .locator('button')
+      .filter({ has: page.locator('svg path') })
+      .first()
+      .click();
 
     await expect(modal).not.toBeVisible({ timeout: 3000 });
   });

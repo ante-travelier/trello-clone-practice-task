@@ -8,7 +8,9 @@
 export function assertTestDatabase(env = process.env) {
   const url = env.DATABASE_URL;
   if (!url) {
-    throw new Error('[test-db-guard] DATABASE_URL is not set. Refusing to run tests.');
+    throw new Error(
+      '[test-db-guard] DATABASE_URL is not set. Refusing to run tests.'
+    );
   }
   let dbName;
   try {

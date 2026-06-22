@@ -53,11 +53,11 @@ newPosition = (beforePosition + afterPosition) / 2
 
 The `calculatePosition` function handles three cases:
 
-| Scenario | Calculation | Example |
-|---|---|---|
-| Empty list / append to end | `lastPosition + 65536` | `65536 + 65536 = 131072` |
-| Insert at beginning | `firstPosition / 2` | `65536 / 2 = 32768` |
-| Insert between two items | `(before + after) / 2` | `(65536 + 131072) / 2 = 98304` |
+| Scenario                   | Calculation            | Example                        |
+| -------------------------- | ---------------------- | ------------------------------ |
+| Empty list / append to end | `lastPosition + 65536` | `65536 + 65536 = 131072`       |
+| Insert at beginning        | `firstPosition / 2`    | `65536 / 2 = 32768`            |
+| Insert between two items   | `(before + after) / 2` | `(65536 + 131072) / 2 = 98304` |
 
 The initial spacing of `65536` (2^16) provides ample room for insertions before precision becomes a concern. In practice, a user would need to perform hundreds of consecutive insertions at the same position to exhaust floating-point precision.
 

@@ -26,16 +26,23 @@ export async function deleteChecklist(cardId, checklistId) {
 }
 
 export async function addChecklistItem(cardId, checklistId, data) {
-  const res = await api.post(`/cards/${cardId}/checklists/${checklistId}/items`, data);
+  const res = await api.post(
+    `/cards/${cardId}/checklists/${checklistId}/items`,
+    data
+  );
   return res.data.data;
 }
 
 export async function toggleChecklistItem(cardId, checklistId, itemId) {
-  const res = await api.patch(`/cards/${cardId}/checklists/${checklistId}/items/${itemId}`);
+  const res = await api.patch(
+    `/cards/${cardId}/checklists/${checklistId}/items/${itemId}`
+  );
   return res.data.data;
 }
 
 export async function deleteChecklistItem(cardId, checklistId, itemId) {
-  const res = await api.delete(`/cards/${cardId}/checklists/${checklistId}/items/${itemId}`);
+  const res = await api.delete(
+    `/cards/${cardId}/checklists/${checklistId}/items/${itemId}`
+  );
   return res.data.data;
 }

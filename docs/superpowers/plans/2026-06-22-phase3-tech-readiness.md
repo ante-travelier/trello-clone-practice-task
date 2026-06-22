@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make this repository safe and reproducible for an autonomous coding agent to clone into an ephemeral devbox, work natively, and verify its own changes hermetically with one command and in CI — the *Tech & tooling* dimension of Phase 3 ("async autonomous execution").
+**Goal:** Make this repository safe and reproducible for an autonomous coding agent to clone into an ephemeral devbox, work natively, and verify its own changes hermetically with one command and in CI — the _Tech & tooling_ dimension of Phase 3 ("async autonomous execution").
 
 **Architecture:** Keep the repo as a plain native-harness codebase (no MCP wrapper). Add a code-enforced test-database guard, an ephemeral Postgres container, a single root `verify` orchestrator that runs the full test pyramid against the throwaway DB, a reproducible devbox image, lint/format/coverage gates, and a CI workflow that runs the same `verify`. Safety lives in code and at the perimeter, never by narrowing the agent's tools.
 
@@ -13,7 +13,7 @@
 - **Repo root** for all new top-level files is the git root: `trello-clone-practice-task/`. All paths below are relative to it.
 - **JavaScript only** for server and client — do NOT introduce TypeScript (per `CLAUDE.md`). e2e stays TypeScript.
 - **No repo MCP.** Do not wrap the codebase behind an MCP server. The agent uses the native shell/fs/git harness.
-- **Ephemeral test database** named `trello_clone_test`, served on host port **5433** (to never collide with a developer's dev Postgres on 5432). Canonical URL: `postgresql://postgres:postgres@localhost:5433/trello_clone_test`.
+- **Ephemeral test database** named `trello_clone_test`, served on host port **55433** (to never collide with a developer's dev Postgres on 5432). Canonical URL: `postgresql://postgres:postgres@localhost:55433/trello_clone_test`.
 - **Server is ESM**; Jest runs via `node --experimental-vm-modules`. `app.listen` in `server/src/index.js:41` is already guarded by `NODE_ENV !== 'test'` — preserve that.
 - **dotenv does not override already-set env vars**, so passing `DATABASE_URL`/`NODE_ENV` through `process.env` to a `npm run dev` subprocess wins over `server/.env`. Rely on this for hermetic runs.
 - **Conventional commits**, one commit per task.
@@ -26,11 +26,13 @@
 The single most dangerous thing in the repo today: `server/src/__tests__/setup.js:94` runs `cleanDatabase()` (truncates every table) in `beforeEach`, guarded only by a prose warning in `CLAUDE.md`. An autonomous `npm test` against the dev DB wipes it. Move the guard into code.
 
 **Files:**
+
 - Create: `server/src/lib/assertTestDatabase.js`
 - Create: `server/src/__tests__/assertTestDatabase.test.js`
 - Modify: `server/src/__tests__/setup.js` (add guard call near top)
 
 **Interfaces:**
+
 - Produces: `assertTestDatabase(env = process.env) -> { dbName: string }` — throws `Error` if `env.NODE_ENV !== 'test'`, if `DATABASE_URL` is missing/invalid, or if the database name does not contain `test` (case-insensitive). Returns `{ dbName }` on success.
 
 - [ ] **Step 1: Write the failing test**
@@ -39,34 +41,40 @@ The single most dangerous thing in the repo today: `server/src/__tests__/setup.j
 // server/src/__tests__/assertTestDatabase.test.js
 import { assertTestDatabase } from '../lib/assertTestDatabase.js';
 
-const TEST_URL = 'postgresql://postgres:postgres@localhost:5433/trello_clone_test';
+const TEST_URL =
+  'postgresql://postgres:postgres@localhost:55433/trello_clone_test';
 const PROD_URL = 'postgresql://postgres:postgres@localhost:5432/trello_clone';
 
 describe('assertTestDatabase', () => {
   test('throws when DATABASE_URL is missing', () => {
-    expect(() => assertTestDatabase({ NODE_ENV: 'test' })).toThrow(/DATABASE_URL is not set/);
+    expect(() => assertTestDatabase({ NODE_ENV: 'test' })).toThrow(
+      /DATABASE_URL is not set/
+    );
   });
 
   test('throws when NODE_ENV is not "test"', () => {
-    expect(() => assertTestDatabase({ NODE_ENV: 'development', DATABASE_URL: TEST_URL }))
-      .toThrow(/Refusing to run destructive tests/);
+    expect(() =>
+      assertTestDatabase({ NODE_ENV: 'development', DATABASE_URL: TEST_URL })
+    ).toThrow(/Refusing to run destructive tests/);
   });
 
   test('throws when the database name does not contain "test"', () => {
-    expect(() => assertTestDatabase({ NODE_ENV: 'test', DATABASE_URL: PROD_URL }))
-      .toThrow(/Refusing to run destructive tests/);
+    expect(() =>
+      assertTestDatabase({ NODE_ENV: 'test', DATABASE_URL: PROD_URL })
+    ).toThrow(/Refusing to run destructive tests/);
   });
 
   test('returns the db name for a proper test database', () => {
-    expect(assertTestDatabase({ NODE_ENV: 'test', DATABASE_URL: TEST_URL }))
-      .toEqual({ dbName: 'trello_clone_test' });
+    expect(
+      assertTestDatabase({ NODE_ENV: 'test', DATABASE_URL: TEST_URL })
+    ).toEqual({ dbName: 'trello_clone_test' });
   });
 });
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd server && NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5433/trello_clone_test npm test -- assertTestDatabase`
+Run: `cd server && NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:55433/trello_clone_test npm test -- assertTestDatabase`
 Expected: FAIL — `Cannot find module '../lib/assertTestDatabase.js'`.
 
 - [ ] **Step 3: Write the minimal implementation**
@@ -83,7 +91,9 @@ Expected: FAIL — `Cannot find module '../lib/assertTestDatabase.js'`.
 export function assertTestDatabase(env = process.env) {
   const url = env.DATABASE_URL;
   if (!url) {
-    throw new Error('[test-db-guard] DATABASE_URL is not set. Refusing to run tests.');
+    throw new Error(
+      '[test-db-guard] DATABASE_URL is not set. Refusing to run tests.'
+    );
   }
   let dbName;
   try {
@@ -106,7 +116,7 @@ export function assertTestDatabase(env = process.env) {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd server && NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5433/trello_clone_test npm test -- assertTestDatabase`
+Run: `cd server && NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:55433/trello_clone_test npm test -- assertTestDatabase`
 Expected: PASS — 4 passing.
 
 - [ ] **Step 5: Wire the guard into the destructive setup**
@@ -139,11 +149,13 @@ git commit -m "feat(server): enforce test-database safety guard in code"
 Provide a throwaway, hermetic Postgres the test pyramid runs against — gone after every run.
 
 **Files:**
+
 - Create: `docker-compose.yml`
 - Modify: `.env.example` (document the test DB URL)
 
 **Interfaces:**
-- Produces: a compose service `db` reachable at `postgresql://postgres:postgres@localhost:5433/trello_clone_test`, data on `tmpfs` (never persisted), with a healthcheck so callers can `--wait`.
+
+- Produces: a compose service `db` reachable at `postgresql://postgres:postgres@localhost:55433/trello_clone_test`, data on `tmpfs` (never persisted), with a healthcheck so callers can `--wait`.
 
 - [ ] **Step 1: Create the compose file**
 
@@ -157,11 +169,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: trello_clone_test
     ports:
-      - "5433:5432"
+      - '55433:5432'
     tmpfs:
-      - /var/lib/postgresql/data   # ephemeral: data lives in RAM, dropped on teardown
+      - /var/lib/postgresql/data # ephemeral: data lives in RAM, dropped on teardown
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d trello_clone_test"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d trello_clone_test']
       interval: 2s
       timeout: 3s
       retries: 20
@@ -184,7 +196,7 @@ Append to `.env.example`:
 ```env
 
 # Ephemeral test database (docker compose service "db"). Used by `npm run verify`.
-# TEST_DATABASE_URL="postgresql://postgres:postgres@localhost:5433/trello_clone_test"
+# TEST_DATABASE_URL="postgresql://postgres:postgres@localhost:55433/trello_clone_test"
 ```
 
 - [ ] **Step 5: Tear down (confirm ephemerality) and commit**
@@ -202,13 +214,15 @@ git commit -m "feat: add ephemeral postgres for hermetic test runs"
 Give the agent (and CI) a single hermetic command. A root `package.json` holds dev tooling and orchestration; a Node script drives the pipeline so it is OS-portable and tears the DB down even on failure.
 
 **Files:**
+
 - Create: `package.json` (repo root)
 - Create: `scripts/verify.mjs`
 - Create: `.gitignore` entry update (root already ignores `node_modules/`)
 
 **Interfaces:**
+
 - Produces root npm scripts: `setup`, `install:all`, `db:up`, `db:down`, `migrate:test`, `test:server`, `test:client`, `build:client`, `test:e2e`, `verify`.
-- `scripts/verify.mjs` constant `TEST_DATABASE_URL = 'postgresql://postgres:postgres@localhost:5433/trello_clone_test'`. In CI (`process.env.CI` set) it does NOT manage compose and expects the DB already provided; otherwise it runs `db:up`/`db:down` around the pipeline.
+- `scripts/verify.mjs` constant `TEST_DATABASE_URL = 'postgresql://postgres:postgres@localhost:55433/trello_clone_test'`. In CI (`process.env.CI` set) it does NOT manage compose and expects the DB already provided; otherwise it runs `db:up`/`db:down` around the pipeline.
 
 - [ ] **Step 1: Create the root `package.json`**
 
@@ -239,7 +253,7 @@ Give the agent (and CI) a single hermetic command. A root `package.json` holds d
 import { execSync } from 'node:child_process';
 
 const TEST_DATABASE_URL =
-  'postgresql://postgres:postgres@localhost:5433/trello_clone_test';
+  'postgresql://postgres:postgres@localhost:55433/trello_clone_test';
 const isCI = Boolean(process.env.CI);
 
 function run(cmd, extraEnv = {}) {
@@ -297,11 +311,13 @@ git commit -m "feat: add root verify orchestrator and task runner"
 An ephemeral, isolated box with the whole toolchain pinned, so any agent run starts from an identical environment.
 
 **Files:**
+
 - Create: `Dockerfile`
 - Create: `.dockerignore`
 - Create: `.devcontainer/devcontainer.json`
 
 **Interfaces:**
+
 - Produces a `node:20-bookworm` image with Playwright browser system deps and the repo deps preinstalled; `.devcontainer` wires VS Code / agent devbox to the same image plus the `db` compose service.
 
 - [ ] **Step 1: Create the `.dockerignore`**
@@ -347,10 +363,10 @@ CMD ["bash"]
 {
   "name": "trello-clone-devbox",
   "build": { "dockerfile": "../Dockerfile", "context": ".." },
-  "forwardPorts": [4000, 5173, 5433],
+  "forwardPorts": [4000, 5173, 55433],
   "postCreateCommand": "npm run setup",
   "remoteEnv": {
-    "TEST_DATABASE_URL": "postgresql://postgres:postgres@localhost:5433/trello_clone_test"
+    "TEST_DATABASE_URL": "postgresql://postgres:postgres@localhost:55433/trello_clone_test"
   }
 }
 ```
@@ -379,10 +395,12 @@ git commit -m "feat: add reproducible devbox image and devcontainer"
 Today Playwright boots `npm run dev` for both servers (`e2e/playwright.config.ts:16`). Ensure those inherit the ephemeral DB and that browsers/system deps are present so the run is non-interactive.
 
 **Files:**
+
 - Modify: `e2e/playwright.config.ts` (comment clarifying env inheritance; raise webServer timeout)
 - Modify: `scripts/verify.mjs` (use `--with-deps` so a bare box can run e2e)
 
 **Interfaces:**
+
 - Consumes: `DATABASE_URL` + `NODE_ENV=e2e` + `CI=true` from the parent process env (set by `verify.mjs`). The booted server reads these because `dotenv` does not override pre-set env vars.
 
 - [ ] **Step 1: Annotate and harden the Playwright webServer config**
@@ -413,7 +431,7 @@ In `e2e/playwright.config.ts`, replace the `webServer` array with:
 In `scripts/verify.mjs`, change the Playwright install line to:
 
 ```js
-  run('npm --prefix e2e exec -- playwright install --with-deps chromium');
+run('npm --prefix e2e exec -- playwright install --with-deps chromium');
 ```
 
 - [ ] **Step 3: Run the full pipeline end-to-end**
@@ -435,10 +453,12 @@ git commit -m "feat(e2e): make e2e run hermetic and unattended"
 A cheap, deterministic correctness signal before the slow test suites. e2e (TypeScript) is out of scope for this pass.
 
 **Files:**
+
 - Create: `eslint.config.js` (repo root)
 - Modify: `package.json` (root) — add `lint` script + devDeps
 
 **Interfaces:**
+
 - Produces root script `lint` = `eslint .` covering `server/**/*.js` (Node+Jest globals, ESM) and `client/**/*.{js,jsx}` (browser globals, React, JSX).
 
 - [ ] **Step 1: Add lint tooling to the root `package.json`**
@@ -518,7 +538,7 @@ Expected (after fixes): `npm run lint` exits 0 with no output.
 In `scripts/verify.mjs`, add as the FIRST step inside the `try` (before `db:up`):
 
 ```js
-  run('npm run lint');
+run('npm run lint');
 ```
 
 - [ ] **Step 6: Commit**
@@ -536,11 +556,13 @@ git commit -m "feat: add eslint flat config and fix violations"
 Deterministic formatting so agent diffs stay minimal and reviewable.
 
 **Files:**
+
 - Create: `.prettierrc.json`
 - Create: `.prettierignore`
 - Modify: `package.json` (root) — add `format`, `format:check` scripts + devDep
 
 **Interfaces:**
+
 - Produces root scripts `format` (write) and `format:check` (verify, used by CI/verify).
 
 - [ ] **Step 1: Add Prettier to root `package.json`**
@@ -585,7 +607,7 @@ Expected: `All matched files use Prettier code style!`
 In `scripts/verify.mjs`, add right after the `lint` step:
 
 ```js
-  run('npm run format:check');
+run('npm run format:check');
 ```
 
 ```bash
@@ -601,16 +623,18 @@ git commit -m "feat: add prettier formatting gate"
 Make "did I keep the tests meaningful" measurable and enforced, with a baseline that can ratchet up. (Diff/agent-touched coverage targets are an org/metrics concern, explicitly out of scope here.)
 
 **Files:**
+
 - Modify: `server/jest.config.js` (coverage + thresholds)
 - Modify: `client/vite.config.js` (coverage provider + thresholds)
 - Modify: `server/package.json`, `client/package.json` (coverage devDep / script)
 
 **Interfaces:**
+
 - Produces: `npm run test:server` and `npm run test:client` emit coverage and FAIL if below the recorded baseline thresholds.
 
 - [ ] **Step 1: Measure current server coverage**
 
-Run: `cd server && NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:5433/trello_clone_test node --experimental-vm-modules node_modules/.bin/jest --coverage --coverageProvider=v8`
+Run: `cd server && NODE_ENV=test DATABASE_URL=postgresql://postgres:postgres@localhost:55433/trello_clone_test node --experimental-vm-modules node_modules/.bin/jest --coverage --coverageProvider=v8`
 (Bring the DB up first with `npm run db:up` from root.)
 Record the `% Lines`, `% Statements`, `% Functions`, `% Branches` from the summary table.
 
@@ -682,10 +706,12 @@ git commit -m "feat: enforce baseline coverage on server and client"
 Run the exact same `verify` on every push and PR, using a service Postgres instead of compose.
 
 **Files:**
+
 - Create: `.github/workflows/verify.yml`
 
 **Interfaces:**
-- Consumes: root `verify`/scripts with `CI=true` (so `verify.mjs` skips compose) and `TEST_DATABASE_URL` pointed at the service container on port 5433.
+
+- Consumes: root `verify`/scripts with `CI=true` (so `verify.mjs` skips compose) and `TEST_DATABASE_URL` pointed at the service container on port 55433.
 
 - [ ] **Step 1: Create the workflow**
 
@@ -707,13 +733,13 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: trello_clone_test
         ports:
-          - 5433:5432
+          - 55433:5432
         options: >-
           --health-cmd "pg_isready -U postgres -d trello_clone_test"
           --health-interval 2s --health-timeout 3s --health-retries 20
     env:
       CI: 'true'
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5433/trello_clone_test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:55433/trello_clone_test
       NODE_ENV: test
     steps:
       - uses: actions/checkout@v4
@@ -755,6 +781,7 @@ git commit -m "ci: run verify (lint, format, full test pyramid) on push and PR"
 Point `CLAUDE.md` and `README.md` at the new one-command workflow and replace the prose-only DB warning with a reference to the code guard.
 
 **Files:**
+
 - Modify: `CLAUDE.md`
 - Modify: `README.md`
 
@@ -766,10 +793,11 @@ In `CLAUDE.md`, add a row to the Key commands table: `| Verify everything (lint+
 
 ```md
 ## Test database safety (enforced in code)
+
 Destructive test setup is guarded by `server/src/lib/assertTestDatabase.js`: tests
 refuse to run unless `NODE_ENV=test` AND the database name contains `test`. The
 hermetic path is `npm run verify` (repo root), which runs everything against an
-ephemeral Postgres (`docker-compose.yml`, port 5433) and tears it down after.
+ephemeral Postgres (`docker-compose.yml`, port 55433) and tears it down after.
 Never point tests at the dev database manually.
 ```
 
@@ -796,6 +824,7 @@ git commit -m "docs: document verify workflow, devbox, and code-enforced db guar
 Ship the reusable artifacts our model names under "Context standards": the implementation-plan template (the `spec → plan → PR` middle artifact), an agent-consumable spec template, and a PR-review checklist. These are what the skills and subagents in Tasks 12–13 consume.
 
 **Files:**
+
 - Create: `.claude/templates/implementation-plan.md`
 - Create: `.claude/templates/agent-spec.md`
 - Create: `.claude/templates/pr-review-checklist.md`
@@ -806,30 +835,37 @@ Ship the reusable artifacts our model names under "Context standards": the imple
 
 ```md
 <!-- .claude/templates/implementation-plan.md -->
+
 # <Task title> — Implementation Plan
 
 **Spec:** <link to ticket / agent-spec>
 **Author:** <agent> · **Approved by:** <engineer> · **Date:** <YYYY-MM-DD>
 
 ## Goal
+
 <One sentence: what this change delivers.>
 
 ## Approach
+
 <2–4 sentences: how, and why this way over alternatives.>
 
 ## Files to touch
+
 - `path` — <what changes>
 
 ## Test plan
+
 - <unit/integration/e2e cases that prove it; commands to run>
 
 ## Blast radius & risk
+
 - **Blast radius:** <files/systems affected>
 - **Reversibility:** <easy / migration / data>
 - **Novelty:** <routine / novel pattern>
 - **Risk tier:** <low → auto-proceed | high → human sign-off required>
 
 ## Out of scope
+
 - <explicitly not doing>
 ```
 
@@ -837,18 +873,23 @@ Ship the reusable artifacts our model names under "Context standards": the imple
 
 ```md
 <!-- .claude/templates/agent-spec.md -->
+
 # <Feature> — Agent-Consumable Spec
 
 ## What & why
+
 <The user-facing outcome and the reason. No implementation detail.>
 
 ## Acceptance criteria
+
 - [ ] <observable, testable behavior>
 
 ## Constraints
+
 - <API shape, data, perf, security boundaries the agent must respect>
 
 ## Non-goals
+
 - <what this ticket does NOT include>
 ```
 
@@ -856,6 +897,7 @@ Ship the reusable artifacts our model names under "Context standards": the imple
 
 ```md
 <!-- .claude/templates/pr-review-checklist.md -->
+
 # Agent-PR Review Checklist
 
 - [ ] Implements the spec's acceptance criteria — nothing more (no scope creep)
@@ -885,11 +927,13 @@ git commit -m "feat(harness): add plan, spec, and PR-review templates"
 The procedures an agent runs in this repo, named per our model's minimum set. Each is a `SKILL.md` with `name`/`description` frontmatter so Claude Code auto-discovers it.
 
 **Files:**
+
 - Create: `.claude/skills/spec-to-plan/SKILL.md`
 - Create: `.claude/skills/verify-changes/SKILL.md`
 - Create: `.claude/skills/open-pr/SKILL.md`
 
 **Interfaces:**
+
 - `verify-changes` is the canonical self-check: it shells out to `npm run verify` (Task 3) and reports.
 - `spec-to-plan` consumes `.claude/templates/implementation-plan.md` (Task 11).
 - `open-pr` consumes `.claude/templates/pr-review-checklist.md` (Task 11) and requires `verify-changes` green.
@@ -924,7 +968,7 @@ description: Use to verify changes in this repo before committing or opening a P
 The single source of truth for "is my change correct" in this repo.
 
 1. From the repo root run: `npm run verify`.
-   - It brings up an ephemeral Postgres (port 5433), migrates, runs ESLint, Prettier check, server (Jest) + client (Vitest) + e2e (Playwright) suites with coverage, builds the client, then tears the DB down.
+   - It brings up an ephemeral Postgres (port 55433), migrates, runs ESLint, Prettier check, server (Jest) + client (Vitest) + e2e (Playwright) suites with coverage, builds the client, then tears the DB down.
 2. If it fails, read the first failing step, fix the root cause (do NOT lower coverage thresholds or weaken the test-db guard to make it pass), and re-run.
 3. Never run `npm test` against a non-test database — the test-db guard (`server/src/lib/assertTestDatabase.js`) will refuse, and that refusal is correct.
 4. Report the final result and, on success, the coverage summary.
@@ -964,6 +1008,7 @@ git commit -m "feat(harness): add spec-to-plan, verify-changes, open-pr skills"
 The reviewer/author roles from our model's minimum set, as project subagents Claude Code can dispatch. Each is a markdown file with `name`/`description`/`tools` frontmatter.
 
 **Files:**
+
 - Create: `.claude/agents/agent-pr-self-reviewer.md`
 - Create: `.claude/agents/code-reviewer.md`
 - Create: `.claude/agents/test-author.md`
@@ -982,6 +1027,7 @@ tools: Read, Grep, Glob, Bash
 You are the last automated check before a human reviews an agent's PR. Examine the staged/working diff (`git diff`).
 
 Flag, with file:line and a concrete fix:
+
 - **Correctness bugs** — logic errors, unhandled errors, wrong API contracts (`{ data }` / `{ error }`).
 - **Security** — authz gaps on protected routes, secret leakage, injection, missing Zod validation.
 - **Scope creep** — anything beyond the approved plan's blast radius; unrelated churn.
@@ -1000,6 +1046,7 @@ tools: Read, Grep, Glob, Bash
 ---
 
 You review for architecture and intent (not style — lint handles that). Check the diff against `.claude/templates/pr-review-checklist.md` and the repo conventions in `CLAUDE.md`:
+
 - Does it follow the controller/route/middleware (server) and component/page (client) patterns?
 - Is the change the simplest one that satisfies the spec? Any reinvention of existing helpers?
 - Are Prisma schema/migration changes safe and reversible?
@@ -1017,6 +1064,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
 You add meaningful tests for the change under review. Match the existing patterns:
+
 - Server: Jest + Supertest via `server/src/__tests__/setup.js` helpers (`createTestUser`, etc.). Never bypass the test-db guard.
 - Client: Vitest + React Testing Library; query by role/text, not implementation detail.
 - e2e: Playwright specs in `e2e/tests`.
@@ -1041,6 +1089,7 @@ git commit -m "feat(harness): add self-reviewer, code-reviewer, test-author suba
 Reduce permission friction for the autonomous loop and add an auto-format guardrail (our model's "formatter & linter" hook). Document the harness kit in `CLAUDE.md`.
 
 **Files:**
+
 - Create: `.claude/settings.json`
 - Modify: `CLAUDE.md` (add a "Harness kit" section)
 
@@ -1069,10 +1118,7 @@ Reduce permission friction for the autonomous loop and add an auto-format guardr
       "Bash(git status)",
       "Bash(git diff :*)"
     ],
-    "deny": [
-      "Read(./server/.env)",
-      "Read(./.env)"
-    ]
+    "deny": ["Read(./server/.env)", "Read(./.env)"]
   },
   "hooks": {
     "PostToolUse": [
@@ -1103,7 +1149,9 @@ Append to `CLAUDE.md`:
 
 ```md
 ## Harness kit (`.claude/`)
+
 This repo ships the agentic-development primitives:
+
 - **Skills** (`.claude/skills/`): `spec-to-plan` (draft a plan for approval before code), `verify-changes` (`npm run verify`), `open-pr` (land to standard).
 - **Subagents** (`.claude/agents/`): `agent-pr-self-reviewer`, `code-reviewer`, `test-author`.
 - **Templates** (`.claude/templates/`): implementation-plan, agent-spec, PR-review checklist.
@@ -1124,6 +1172,7 @@ git commit -m "feat(harness): add permission allowlist, auto-format hook, harnes
 ## Self-Review
 
 **Spec coverage (tech-axis Phase 3):**
+
 - Native harness preserved, no repo MCP — Global Constraints. ✓
 - Code-enforced test-DB safety — Task 1. ✓
 - Ephemeral isolated DB/devbox — Tasks 2 (DB) + 4 (image/devcontainer). ✓

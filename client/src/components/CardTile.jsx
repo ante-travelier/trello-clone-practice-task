@@ -29,16 +29,28 @@ export default function CardTile({ card, index, onClick }) {
 
           <p className="text-sm text-gray-800 leading-snug">{card.title}</p>
 
-          {(card.dueDate || (card.checklists && card.checklists.length > 0)) && (
+          {(card.dueDate ||
+            (card.checklists && card.checklists.length > 0)) && (
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               {card.dueDate && <DueDateBadge date={card.dueDate} />}
               {card.checklists && card.checklists.length > 0 && (
                 <span className="text-xs text-gray-500 flex items-center gap-0.5">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
                   </svg>
                   {card.checklists.reduce(
-                    (acc, cl) => acc + (cl.items?.filter((i) => i.checked).length || 0),
+                    (acc, cl) =>
+                      acc + (cl.items?.filter((i) => i.checked).length || 0),
                     0
                   )}
                   /

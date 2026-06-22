@@ -27,11 +27,11 @@ Click on a card tile to open the **Card Detail Modal**, which provides access to
 
 The `DueDateBadge` component displays the due date with color coding based on how close the date is:
 
-| Condition | Badge Style | Meaning |
-|---|---|---|
-| Due date is in the past (`diffDays < 0`) | Red background, white text | Overdue |
-| Due date is today (`diffDays === 0`) | Yellow background, dark text | Due today |
-| Due date is in the future (`diffDays > 0`) | Gray background, dark text | Upcoming |
+| Condition                                  | Badge Style                  | Meaning   |
+| ------------------------------------------ | ---------------------------- | --------- |
+| Due date is in the past (`diffDays < 0`)   | Red background, white text   | Overdue   |
+| Due date is today (`diffDays === 0`)       | Yellow background, dark text | Due today |
+| Due date is in the future (`diffDays > 0`) | Gray background, dark text   | Upcoming  |
 
 The date is displayed in `"MMM D"` format (e.g., "Jan 15") using `toLocaleDateString('en-US', { month: 'short', day: 'numeric' })`.
 
@@ -51,14 +51,14 @@ percent = total > 0 ? Math.round((checked / total) * 100) : 0
 
 Labels can be added with custom text and one of six preset colors:
 
-| Color Name | Hex Code |
-|---|---|
-| Green | `#61bd4f` |
-| Yellow | `#f2d600` |
-| Orange | `#ff9f1a` |
-| Red | `#eb5a46` |
-| Purple | `#c377e0` |
-| Blue | `#0079bf` |
+| Color Name | Hex Code  |
+| ---------- | --------- |
+| Green      | `#61bd4f` |
+| Yellow     | `#f2d600` |
+| Orange     | `#ff9f1a` |
+| Red        | `#eb5a46` |
+| Purple     | `#c377e0` |
+| Blue       | `#0079bf` |
 
 Labels are displayed as colored pills on the card tile (compact, color-only dots) and in the card modal (full text with background color).
 
@@ -71,6 +71,7 @@ Labels are displayed as colored pills on the card tile (compact, color-only dots
 Create a new card in a list.
 
 **Request body:**
+
 ```json
 {
   "title": "Implement login page"
@@ -78,6 +79,7 @@ Create a new card in a list.
 ```
 
 **Response** (`201`):
+
 ```json
 {
   "data": {
@@ -99,6 +101,7 @@ Create a new card in a list.
 Update card fields (title, description, dueDate, position, listId).
 
 **Request body (examples):**
+
 ```json
 {
   "title": "Updated title",
@@ -108,6 +111,7 @@ Update card fields (title, description, dueDate, position, listId).
 ```
 
 To move a card to another list:
+
 ```json
 {
   "listId": "clx5mno...",
@@ -126,6 +130,7 @@ Delete a card and all associated labels, checklists, and items.
 Get a card with all related data (labels, checklists, checklist items).
 
 **Response** (`200`):
+
 ```json
 {
   "data": {
@@ -133,9 +138,7 @@ Get a card with all related data (labels, checklists, checklist items).
     "title": "Implement login page",
     "description": "Build the login form with validation",
     "dueDate": "2025-02-01T00:00:00.000Z",
-    "labels": [
-      { "_id": "clx6pqr...", "text": "Frontend", "color": "#0079bf" }
-    ],
+    "labels": [{ "_id": "clx6pqr...", "text": "Frontend", "color": "#0079bf" }],
     "checklists": [
       {
         "_id": "clx7stu...",
@@ -157,6 +160,7 @@ Get a card with all related data (labels, checklists, checklist items).
 Add a label to a card.
 
 **Request body:**
+
 ```json
 {
   "text": "Bug",
@@ -175,6 +179,7 @@ Remove a label from a card.
 Create a new checklist on a card.
 
 **Request body:**
+
 ```json
 {
   "title": "QA Steps"
@@ -192,6 +197,7 @@ Delete a checklist and all its items.
 Add an item to a checklist.
 
 **Request body:**
+
 ```json
 {
   "text": "Test edge cases"

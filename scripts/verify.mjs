@@ -32,6 +32,7 @@ const e2eEnv = {
 
 try {
   run('npm run lint');
+  run('npm run format:check');
   if (!isCI) run('npm run db:up');
   run('npm run migrate:test', dbEnv);
   run('npm run test:server', testEnv);
@@ -39,8 +40,16 @@ try {
   run('npm run build:client');
   run('npm --prefix e2e exec -- playwright install --with-deps chromium');
   // Free the e2e server ports before Playwright starts its own (CI=true disallows reuse).
-  try { execSync('lsof -ti :4000 | xargs kill -9', { stdio: 'ignore' }); } catch { /* nothing on port */ }
-  try { execSync('lsof -ti :5173 | xargs kill -9', { stdio: 'ignore' }); } catch { /* nothing on port */ }
+  try {
+    execSync('lsof -ti :4000 | xargs kill -9', { stdio: 'ignore' });
+  } catch {
+    /* nothing on port */
+  }
+  try {
+    execSync('lsof -ti :5173 | xargs kill -9', { stdio: 'ignore' });
+  } catch {
+    /* nothing on port */
+  }
   run('npm run test:e2e', e2eEnv);
   console.log('\n✅ verify passed');
 } finally {
