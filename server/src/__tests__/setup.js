@@ -1,6 +1,10 @@
 import supertest from 'supertest';
 import app from '../index.js';
 import prisma from '../prisma/client.js';
+import { assertTestDatabase } from '../lib/assertTestDatabase.js';
+
+// Fail fast before any test truncates tables, if pointed at a non-test DB.
+assertTestDatabase();
 
 export const request = supertest(app);
 
