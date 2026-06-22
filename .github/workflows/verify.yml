@@ -23,6 +23,9 @@ jobs:
       CI: 'true'
       DATABASE_URL: postgresql://postgres:postgres@localhost:55433/trello_clone_test
       NODE_ENV: test
+      # JWT secrets required by the server (auth tests + the e2e server). Test-only placeholders, mirroring scripts/verify.mjs.
+      JWT_SECRET: test-jwt-secret-for-verify
+      JWT_REFRESH_SECRET: test-jwt-refresh-secret-for-verify
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,3 +43,6 @@ jobs:
         run: npm run test:e2e
         env:
           NODE_ENV: e2e
+          # The e2e server is booted by Playwright; mirror verify.mjs's e2e env so CORS + client API base are correct.
+          CLIENT_URL: http://localhost:5173
+          VITE_API_URL: http://localhost:4000/api
