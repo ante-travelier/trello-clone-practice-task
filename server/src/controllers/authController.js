@@ -43,8 +43,12 @@ export async function register(req, res, next) {
       data: { name, email, password: hashedPassword },
     });
 
-    // Seed demo boards in the background (don't block registration response)
-    seedDemoBoards(user.id).catch(() => {});
+    // Seed demo boards in the background (don't block registration response).
+    // Skip in test/e2e environments to keep boards predictable for assertions.
+    const skipSeed = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'e2e';
+    if (!skipSeed) {
+      seedDemoBoards(user.id).catch(() => {});
+    }
 
     res.status(201).json({
       data: { id: user.id, email: user.email, name: user.name },

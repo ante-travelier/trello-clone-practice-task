@@ -36,9 +36,10 @@ test.describe('Lists & Cards', () => {
 
     // Click the list title to edit it
     await page.locator('h3', { hasText: 'Original Name' }).click();
-    const titleInput = page.locator('input[type="text"]').filter({
-      has: page.locator('[value="Original Name"]'),
-    }).or(page.locator('input[value="Original Name"]'));
+    // Wait for the inline input to appear (it replaces the h3 on click),
+    // then capture a stable element handle before fill() changes its value.
+    const titleInput = page.locator('input[type="text"]').first();
+    await expect(titleInput).toBeVisible();
     await titleInput.fill('Renamed List');
     await titleInput.press('Enter');
 

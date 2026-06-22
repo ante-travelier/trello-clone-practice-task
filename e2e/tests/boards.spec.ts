@@ -36,10 +36,9 @@ test.describe('Boards', () => {
     // Accept the confirm dialog before clicking delete
     page.on('dialog', (dialog) => dialog.accept());
 
-    // Hover over the board tile to reveal the delete button, then click it
-    const boardTile = page.locator('div', { hasText: 'Board To Delete' }).filter({
-      has: page.locator('h3'),
-    });
+    // Hover over the board tile to reveal the delete button, then click it.
+    // Use the innermost card div (has h3 but no descendant divs with h3).
+    const boardTile = page.locator('div').filter({ hasText: /^Board To Delete$/ });
     await boardTile.hover();
     await boardTile.getByTitle('Delete board').click();
 
