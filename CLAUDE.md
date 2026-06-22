@@ -54,3 +54,14 @@ Never point tests at the dev database manually.
 ## Docs
 
 Full feature documentation is in `docs/features/`. Start with `docs/features/index.md`.
+
+## Harness kit (`.claude/`)
+
+This repo ships the agentic-development primitives:
+
+- **Skills** (`.claude/skills/`): `spec-to-plan` (draft a plan for approval before code), `verify-changes` (`npm run verify`), `open-pr` (land to standard).
+- **Subagents** (`.claude/agents/`): `agent-pr-self-reviewer`, `code-reviewer`, `test-author`.
+- **Templates** (`.claude/templates/`): implementation-plan, agent-spec, PR-review checklist.
+- **Guardrails** (`.claude/settings.json`): permission allowlist for the verify/git loop + auto-format on edit.
+
+The loop: spec → `spec-to-plan` (human approves the plan) → code → `verify-changes` → `open-pr`.
